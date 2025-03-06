@@ -1,6 +1,6 @@
 import { View, Text, Button, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { increment, decrement } from "../redux/p-slices/counterSlice";
+import { increment, decrement } from "../../redux/p-slices/counterSlice";
 
 export default function Index() {
   const count = useSelector((state) => state.counter.value);
