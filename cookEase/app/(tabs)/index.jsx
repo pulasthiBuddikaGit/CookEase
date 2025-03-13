@@ -48,3 +48,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 })
+
+// app/(tabs)/auth-test.jsx
+// import { SafeAreaView } from 'react-native';
+// import FirebaseAuthTest from '../../components/FirebaseAuthTest';
+
+// export default function AuthTestScreen() {
+//   return (
+//     <SafeAreaView style={{ flex: 1 }}>
+//       <FirebaseAuthTest />
+//     </SafeAreaView>
+//   );
+// }
