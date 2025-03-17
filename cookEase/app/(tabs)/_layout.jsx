@@ -25,7 +25,7 @@ export default function TabLayout() {
         options={{
           title: 'My Meals',
           tabBarIcon: ({ color }) =>( 
-            <MaterialIcons name="ramen-dining" size={28} color={color} /> //when you use material icons you have replace all the capital letters by simple and replace spaces with dash
+            <MaterialIcons name="ramen-dining" size={28} color={color} /> 
           ),
           tabBarLabel: 'Meal',  
         }}
