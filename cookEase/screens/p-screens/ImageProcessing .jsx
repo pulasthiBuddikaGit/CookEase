@@ -7,9 +7,10 @@ import SelectionPopup from "../../components/p-components/SelectionPopup";
 import { MaterialIcons } from "@expo/vector-icons";
 
 const ImageProcessing = () => {
+  
   const [imageUri, setImageUri] = useState(null);
   const [popupVisible, setPopupVisible] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  // const [selectedImage, setSelectedImage] = useState(null);
 
   // Function to open camera and capture image
 //   const handleCaptureImage = async () => {
@@ -83,10 +84,10 @@ const openGallery = async () => {
   
 // Function to handle the selected image
 const handleImageResult = (result) => {
-if (!result.canceled && result.assets) {
-    setImageUri(result.assets[0].uri);
-    setPopupVisible(true);
-}
+  if (!result.canceled && result.assets) {
+      setImageUri(result.assets[0].uri);
+      setPopupVisible(true);
+  }
 };
 
 const processImage = async (mode) => {
