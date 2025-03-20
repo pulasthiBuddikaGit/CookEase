@@ -17,11 +17,11 @@ export default function RootLayout() {
       <Stack.Screen name="auth/index" options={{ headerShown: true }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       
-      <Stack.Screen name="Nisalka/CreateDiet" options={{ title: "Create Diet Plan" }} />
-      <Stack.Screen name="Nisalka/GeneratedDiet" options={{ title: "Generated Diet Plan" }} />
-      <Stack.Screen name="Nisalka/CurrentDiet" options={{ title: "Current Diet Plan" }} />
-      <Stack.Screen name="Nisalka/DietHistory" options={{ title: "Diet Plan History" }} />
-      <Stack.Screen name="Nisalka/PreviousDiet" options={{ title: "Previous Diet Plan" }} />
+      <Stack.Screen name="screens/n-screens/CreateDiet" options={{ title: "Create Diet Plan" }} />
+      <Stack.Screen name="screens/n-screens/GeneratedDiet" options={{ title: "Generated Diet Plan" }} />
+      <Stack.Screen name="screens/n-screens/CurrentDiet" options={{ title: "Current Diet Plan" }} />
+      <Stack.Screen name="screens/n-screens/DietHistory" options={{ title: "Diet Plan History" }} />
+      <Stack.Screen name="screens/n-screens/PreviousDiet" options={{ title: "Previous Diet Plan" }} />
 
     </Stack> 
     </Provider>

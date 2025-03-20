@@ -8,9 +8,9 @@ export default function DietPlanScreen() {
 
     // Example user data
     const userData = {
-      height: "175 cm",
-      weight: "70 kg",
-      bmi: "22.9 (Normal)",
+      height: "175",
+      weight: "70",
+      bmi: "22.9",
     };
     const dietPlan = {
         breakfast: {
@@ -30,18 +30,18 @@ export default function DietPlanScreen() {
       };
   
     return (
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView decelerationRate={0.5} scrollEventThrottle={2} contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
           <Text style={styles.title}>Your Health Overview</Text>
   
           {/* Three Boxes in One Row */}
           <View style={styles.infoContainer}>
             <View style={styles.infoBox}>
-              <Text style={styles.infoTitle}>Height</Text>
+              <Text style={styles.infoTitle}>Height (cm)</Text>
               <Text style={styles.infoText}>{userData.height}</Text>
             </View>
             <View style={styles.infoBox}>
-              <Text style={styles.infoTitle}>Weight</Text>
+              <Text style={styles.infoTitle}>Weight (kg)</Text>
               <Text style={styles.infoText}>{userData.weight}</Text>
             </View>
             <View style={styles.infoBox}>
@@ -58,9 +58,6 @@ export default function DietPlanScreen() {
         </View>
         </View>
        
-
-
-
 
         {/* View Box for Diet Plan */}
         <View style={styles.dietBox}>
@@ -94,32 +91,30 @@ export default function DietPlanScreen() {
         </View>
 
         <View style={styles.btnBOX}>
-        <TouchableOpacity style={styles.btnM} onPress={() => router.push("/Nisalka/CurrentDiet")}>
+        <TouchableOpacity style={styles.btnM} onPress={() => router.push("/screens/n-screens/CurrentDiet")}>
             <Text style={styles.btnTextM}>More Details</Text>
         </TouchableOpacity>
         </View>
         </View>
 
 
-
-            
-
         {/* Custom button for "Create New Diet Plan" */}
-        <TouchableOpacity style={styles.btnC} onPress={() => router.push("/Nisalka/CreateDiet")}>
+        <TouchableOpacity style={styles.btnC} onPress={() => router.push("/screens/n-screens/CreateDiet")}>
             <Text style={styles.btnText}>Create New Diet Plan</Text>
         </TouchableOpacity>
 
         {/* Custom button for "Current Diet Plan" */}
-        <TouchableOpacity style={styles.btn1} onPress={() => router.push("/Nisalka/DietHistory")}>
+        <TouchableOpacity style={styles.btn1} onPress={() => router.push("/screens/n-screens/DietHistory")}>
             <Text style={styles.btnText}>Diet History</Text>
         </TouchableOpacity>
-  
-          
+    
          
         </View>
       </ScrollView>
     );
   }
+
+
   
   const styles = StyleSheet.create({
     scrollContainer: {

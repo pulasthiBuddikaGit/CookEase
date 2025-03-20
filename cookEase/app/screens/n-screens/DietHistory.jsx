@@ -18,7 +18,7 @@ export default function DietHistoryScreen() {
         <TouchableOpacity
           key={item.id}
           style={styles.historyItem}
-          onPress={() => router.push(`/Nisalka/PreviousDiet?id=${item.id}`)}
+          onPress={() => router.push(`/screens/n-screens/PreviousDiet?id=${item.id}`)}
         >
           <Text style={styles.text}>📅 {item.date}</Text>
           <Text style={styles.text}>🔥 {item.totalCalories} kcal</Text>
