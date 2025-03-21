@@ -90,10 +90,9 @@ const DietForm = () => {
           { 
             text: "View Plan", 
             onPress: () => {
-              // Navigate to results screen with the diet plan text
               router.push({
                 pathname: '/screens/n-screens/GeneratedDiet',
-                params: { dietPlan: dietPlanText }
+                params: { dietPlan: JSON.stringify(dietPlanText) }
               });
             }
           }
@@ -111,7 +110,7 @@ const DietForm = () => {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         <Text style={styles.label}>Age:</Text>
-        <TextInput style={styles.input} keyboardType="numeric" value={age} onChangeText={setAge} />
+        <TextInput style={styles.input} keyboardType="numeric" value={age} onChangeText={(text) =>{if (/^\d{0,4}$/.test(text)){setAge(text);}}} maxLength={2} />
 
         <Text style={styles.label}>Gender:</Text>
         <TouchableOpacity onPress={toggleGenderModal} style={styles.medicalConditionB}>
@@ -149,17 +148,17 @@ const DietForm = () => {
         </Modal>
 
         <Text style={styles.label}>Height (cm):</Text>
-        <TextInput style={styles.input} keyboardType="numeric" value={height} onChangeText={handleHeightChange} />
+        <TextInput style={styles.input} keyboardType="numeric" value={height} onChangeText={(text) =>{if (/^\d{0,4}$/.test(text)){handleHeightChange(text);}}} maxLength={3} />
 
         <Text style={styles.label}>Weight (kg):</Text>
-        <TextInput style={styles.input} keyboardType="numeric" value={weight} onChangeText={handleWeightChange} />
+        <TextInput style={styles.input} keyboardType="numeric" value={weight} onChangeText={(text) =>{if (/^\d{0,4}$/.test(text)){handleWeightChange(text);}}} maxLength={3} />
 
         {/* BMI Calculation */}
         <Text style={styles.label}>BMI:</Text>
         <Text style={styles.input}>{bmi}</Text>
 
-        <Text style={styles.label}>Expected Calorie Count (Kcal):</Text>
-        <TextInput style={styles.input} keyboardType="numeric" value={calories} onChangeText={setCalories} />
+        <Text style={styles.label}>Expected Calories Per Day (Kcal):</Text>
+        <TextInput style={styles.input} keyboardType="numeric" value={calories} onChangeText={(text) =>{if (/^\d{0,4}$/.test(text)){setCalories(text);}}} maxLength={4} />
 
         {/* Show selected conditions after selecting */}
         <Text style={styles.label}>
@@ -248,14 +247,15 @@ const DietForm = () => {
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: '#f9fffb',
   },
   container: {
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 10,
     marginTop: 20,
     margin: 10,
+    marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -292,13 +292,14 @@ const styles = StyleSheet.create({
   //gender modal styles
   genderButton: {
     padding: 10,
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#00796b",
     marginBottom: 10,
     borderRadius: 8,
     alignItems: "center",
   },
   genderButtonText: {
     fontSize: 18,
+    fontWeight: "bold",
     color: "#fff",
   },
 
@@ -362,7 +363,7 @@ const styles = StyleSheet.create({
 
   //generate button styles
   generateButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#d4edda",
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 8,

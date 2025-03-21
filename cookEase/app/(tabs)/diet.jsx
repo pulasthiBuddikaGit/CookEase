@@ -60,41 +60,41 @@ export default function DietPlanScreen() {
        
 
         {/* View Box for Diet Plan */}
-        <View style={styles.dietBox}>
-        <Text style={styles.title}>Your Diet Plan</Text>
+        <View style={styles.dietContainer}>
+          <Text style={styles.title}>Your Diet Plan</Text>
 
         {/* Breakfast Section */}
-        <View style={styles.mealContainer}>
-          <Text style={styles.mealTitle}>🍳 Breakfast</Text>
-          {dietPlan.breakfast.items.map((item, index) => (
-            <Text key={index} style={styles.meal}>{item}</Text>
-          ))}
-          <Text style={styles.caloriesText}>🔥 Calories: {dietPlan.breakfast.calories} kcal</Text>
-        </View>
+          <View style={styles.mealContainer}>
+            <Text style={styles.mealTitle}>🍳 Breakfast</Text>
+            {dietPlan.breakfast.items.map((item, index) => (
+              <Text key={index} style={styles.meal}>{item}</Text>
+            ))}
+            <Text style={styles.caloriesText}> Calories: {dietPlan.breakfast.calories} kcal</Text>
+          </View>
 
         {/* Lunch Section */}
-        <View style={styles.mealContainer}>
-          <Text style={styles.mealTitle}>🥗 Lunch</Text>
-          {dietPlan.lunch.items.map((item, index) => (
-            <Text key={index} style={styles.meal}>{item}</Text>
-          ))}
-          <Text style={styles.caloriesText}>🔥 Calories: {dietPlan.lunch.calories} kcal</Text>
-        </View>
+          <View style={styles.mealContainer}>
+            <Text style={styles.mealTitle}>🥗 Lunch</Text>
+            {dietPlan.lunch.items.map((item, index) => (
+              <Text key={index} style={styles.meal}>{item}</Text>
+            ))}
+            <Text style={styles.caloriesText}> Calories: {dietPlan.lunch.calories} kcal</Text>
+          </View>
 
         {/* Dinner Section */}
-        <View style={styles.mealContainer}>
-          <Text style={styles.mealTitle}>🍽️ Dinner</Text>
-          {dietPlan.dinner.items.map((item, index) => (
-            <Text key={index} style={styles.meal}>{item}</Text>
-          ))}
-          <Text style={styles.caloriesText}>🔥 Calories: {dietPlan.dinner.calories} kcal</Text>
-        </View>
+          <View style={styles.mealContainer}>
+            <Text style={styles.mealTitle}>🍽️ Dinner</Text>
+            {dietPlan.dinner.items.map((item, index) => (
+              <Text key={index} style={styles.meal}>{item}</Text>
+            ))}
+            <Text style={styles.caloriesText}> Calories: {dietPlan.dinner.calories} kcal</Text>
+          </View>
 
-        <View style={styles.btnBOX}>
-        <TouchableOpacity style={styles.btnM} onPress={() => router.push("/screens/n-screens/CurrentDiet")}>
-            <Text style={styles.btnTextM}>More Details</Text>
-        </TouchableOpacity>
-        </View>
+          <View style={styles.btnBOX}>
+          <TouchableOpacity style={styles.btnM} onPress={() => router.push("/screens/n-screens/CurrentDiet")}>
+              <Text style={styles.btnTextM}>More Details</Text>
+          </TouchableOpacity>
+          </View>
         </View>
 
 
@@ -105,7 +105,7 @@ export default function DietPlanScreen() {
 
         {/* Custom button for "Current Diet Plan" */}
         <TouchableOpacity style={styles.btn1} onPress={() => router.push("/screens/n-screens/DietHistory")}>
-            <Text style={styles.btnText}>Diet History</Text>
+            <Text style={styles.btnText2}>View My Diet History</Text>
         </TouchableOpacity>
     
          
@@ -119,17 +119,14 @@ export default function DietPlanScreen() {
   const styles = StyleSheet.create({
     scrollContainer: {
       flexGrow: 1,
+      backgroundColor: '#f9fffb',
     },
     container: {
       flex: 1,
       alignItems: 'center',
       padding: 16,
     },
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginBottom: 60,
-    },
+    
     // Three Boxes in One Row
     infoContainer: {
       flexDirection: 'row',
@@ -139,7 +136,7 @@ export default function DietPlanScreen() {
       marginBottom: 20,
     },
     infoBox: {
-      backgroundColor: '#e0f7fa',
+      backgroundColor: '#fff',
       padding: 15,
       borderRadius: 10,
       alignItems: 'center',
@@ -153,16 +150,17 @@ export default function DietPlanScreen() {
     infoTitle: {
       fontSize: 16,
       fontWeight: 'bold',
-      color: '#00796b',
+      color: '#000',
       marginBottom: 8,
     },
     infoText: {
       fontSize: 16,
-      color: '#333',
+      color: '#444',
     },
     
+    // Calorie Box
     calorieBox: {
-        backgroundColor: '#f3e5f5',
+        backgroundColor: '#d4edda',
         padding: 15,
         borderRadius: 10,
         marginBottom: 20,
@@ -182,28 +180,23 @@ export default function DietPlanScreen() {
       infoTitle2: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: 'black',
+        color: '#000',
     
       },
       infoText2: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: 'black',
+        color: '#00544a',
 
         },
 
-
-
-    
-    dietBox: {
-        backgroundColor: 'white',
+    // Diet Plan Box
+    dietContainer: {
+        backgroundColor: '#fff',
         padding: 20,
         borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.2,
         shadowRadius: 4,
         elevation: 3,
         marginBottom: 20,
@@ -215,9 +208,10 @@ export default function DietPlanScreen() {
         textAlign: 'center',
         marginBottom: 25,
         marginTop: 10,
-        color: '#00796b',
+        color: '#000',
       },
       mealContainer: {
+        backgroundColor: '#fff',
         marginBottom: 15,
         paddingBottom: 10,
         borderBottomWidth: 1,
@@ -238,19 +232,20 @@ export default function DietPlanScreen() {
       caloriesText: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: 'red',
-        marginTop: 5,
+        color: '#00796b',
+        marginTop: 15,
       },
 
+      // Custom button styles view more
       btnBOX:{
         alignItems:'center'
       },      
       btnTextM:{
-        color: 'green', 
+        color: '#000', 
         fontSize: 11, 
       },
       btnM: {
-        backgroundColor: 'white',
+        backgroundColor: '#fff',
         padding: 10,
         borderRadius: 5,
         margin: 10,
@@ -259,9 +254,9 @@ export default function DietPlanScreen() {
       },
 
 
-
+      // Custom button styles
     btnC: {
-        backgroundColor: 'green',
+        backgroundColor: '#d4edda',
         padding: 15,
         borderRadius: 8,
         margin: 10,
@@ -269,7 +264,7 @@ export default function DietPlanScreen() {
         alignItems: 'center',
       },
       btn1: {
-        backgroundColor: 'blue',
+        backgroundColor: '#00796b',
         padding: 15,
         borderRadius: 8,
         margin: 10,
@@ -277,6 +272,11 @@ export default function DietPlanScreen() {
         alignItems: 'center',
       },
       btnText: {
+        color: 'black', 
+        fontSize: 16, 
+        fontWeight: 'bold',
+      },
+      btnText2: {
         color: 'white', 
         fontSize: 16, 
         fontWeight: 'bold',

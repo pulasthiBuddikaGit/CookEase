@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 const DietResults = () => {
   const router = useRouter();
   const { dietPlan } = useLocalSearchParams();
-  const parsedDietPlan = dietPlan ? JSON.parse(dietPlan) : "No diet plan generated";
+  const parsedDietPlan = dietPlan ? (typeof dietPlan === 'string' ? JSON.parse(dietPlan) : dietPlan) : "No diet plan generated";
 
   // Function to format the diet plan text with proper styling
   const formatDietPlan = (text) => {
@@ -34,17 +34,19 @@ const DietResults = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Your Personalized Diet Plan</Text>
-      </View>
       
       <View style={styles.planContainer}>
         {formatDietPlan(parsedDietPlan)}
-      </View>
-      
-      <TouchableOpacity style={styles.backButton} onPress={() => router.push("/screens/n-screens/CreateDiet")}>
-        <Text style={styles.backButtonText}>Back to Form</Text>
+        <TouchableOpacity style={styles.saveButton} onPress={() => router.push("/diet")} >
+        <Text style={styles.saveButtonText}>Save Diet Plan</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.genButton} onPress={() => router.push("/screens/n-screens/CreateDiet")} >
+        <Text style={styles.genButtonText}>Generate Another Plan</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.backButton} onPress={() => router.push("/diet")}>
+        <Text style={styles.backButtonText}>Cancel</Text>
+      </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
@@ -52,7 +54,7 @@ const DietResults = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#f9fffb',
   },
   header: {
     padding: 20,
@@ -98,12 +100,51 @@ const styles = StyleSheet.create({
   spacer: {
     height: 10,
   },
+  saveButton: {
+    backgroundColor: '#00796b',
+    padding: 15,
+    marginTop: 25,
+    marginBottom: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,    
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  genButton: {
+    backgroundColor: '#d4edda',
+    padding: 15,
+    marginBottom: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,    
+  },
+  genButtonText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   backButton: {
     backgroundColor: '#333',
     padding: 15,
-    margin: 20,
     borderRadius: 8,
     alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,    
   },
   backButtonText: {
     color: '#fff',
