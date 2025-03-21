@@ -5,23 +5,14 @@ import * as ImagePicker from 'expo-image-picker';
 import CameraButton from "../../components/p-components/CameraBtn";
 import SelectionPopup from "../../components/p-components/SelectionPopup";
 import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 
 const ImageProcessing = () => {
   
   const [imageUri, setImageUri] = useState(null);
   const [popupVisible, setPopupVisible] = useState(false);
-  // const [selectedImage, setSelectedImage] = useState(null);
 
-  // Function to open camera and capture image
-//   const handleCaptureImage = async () => {
-//     const options = { mediaType: "photo", quality: 1 };
-//     const result = await launchCamera(options);
-
-//     if (result.assets) {
-//       setSelectedImage(result.assets[0].uri);
-//       setPopupVisible(true); // Show popup after capturing image
-//     }
-//   };
 
 const pickImage = async () => {
 // Show an alert to let the user choose between Camera and Gallery
@@ -88,70 +79,23 @@ const handleImageResult = (result) => {
       setImageUri(result.assets[0].uri);
       setPopupVisible(true);
   }
+  //image processing has to be done here
 };
 
-const processImage = async (mode) => {
-  setPopupVisible(false);
-};
-
-  // Function to process image based on selected option
-  // const processImage = async (mode) => {
-  //   setPopupVisible(false);
-  //   if (!selectedImage) return;
-
-  //   const API_KEY = "YOUR_GOOGLE_CLOUD_VISION_API_KEY";
-  //   const base64Image = await fetch(selectedImage)
-  //     .then((response) => response.blob())
-  //     .then((blob) => new Promise((resolve) => {
-  //       const reader = new FileReader();
-  //       reader.onloadend = () => resolve(reader.result.split(",")[1]);
-  //       reader.readAsDataURL(blob);
-  //     }));
-
-  //   const requestPayload = {
-  //     requests: [
-  //       {
-  //         image: { content: base64Image },
-  //         features: [{ type: mode === "text" ? "TEXT_DETECTION" : "LABEL_DETECTION" }],
-  //       },
-  //     ],
-  //   };
-
-  //   try {
-  //     const response = await fetch(
-  //       `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`,
-  //       {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify(requestPayload),
-  //       }
-  //     );
-  //     const data = await response.json();
-  //     handleApiResponse(data, mode);
-  //   } catch (error) {
-  //     Alert.alert("Error", "Failed to process image.");
-  //   }
-  // };
-
-  // Function to handle API response
-  // const handleApiResponse = (data, mode) => {
-  //   if (mode === "text") {
-  //     const textAnnotations = data.responses[0]?.textAnnotations || [];
-  //     Alert.alert("Detected Text", textAnnotations.length ? textAnnotations[0].description : "No text found.");
-  //   } else {
-  //     const labels = data.responses[0]?.labelAnnotations || [];
-  //     Alert.alert(
-  //       "Detected Ingredients",
-  //       labels.length ? labels.map((label) => label.description).join(", ") : "No ingredients found."
-  //     );
-  //   }
-  // };
 
   return (
     <View style={styles.container}>
       {/* {selectedImage && <Image source={{ uri: selectedImage }} style={styles.image} />} */}
-      <CameraButton emoji={<MaterialIcons name="center-focus-weak" size={28}/>} onPress={pickImage} />
-      <SelectionPopup visible={popupVisible} onSelect={processImage} onClose={() => setPopupVisible(false)} />
+
+      <CameraButton emoji={<MaterialIcons name="center-focus-weak" size={28}/>} onPress={()=> setPopupVisible(true)} />
+
+      <SelectionPopup 
+        visible={popupVisible} 
+        onSelect={pickImage} 
+        onClose={() => setPopupVisible(false)} 
+        emojiOne={<MaterialCommunityIcons name="package-variant" size={27}/>}
+        emojiTwo={<MaterialCommunityIcons name="carrot" size={29}/>}
+      />
     </View>
   );
 };

@@ -1,17 +1,18 @@
 import React from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-const SelectionPopup = ({ visible, onSelect, onClose }) => {
+
+const SelectionPopup = ({ visible, onSelect, onClose, emojiOne, emojiTwo }) => {
   return (
     <Modal transparent={true} animationType="slide" visible={visible} onRequestClose={onClose}>
       <View style={styles.overlay}>
         <View style={styles.popup}>
           <Text style={styles.title}>Select What You Wanna Scan</Text>
           <TouchableOpacity style={styles.button} onPress={() => onSelect("text")}>
-            <Text style={styles.buttonText}>Package?</Text>
+            <Text style={styles.buttonText}>{emojiOne}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={() => onSelect("label")}>
-            <Text style={styles.buttonText}>Ingredient?</Text>
+            <Text style={styles.buttonText}>{emojiTwo}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onClose}>
             <Text style={styles.cancelText}>Cancel</Text>
@@ -42,23 +43,23 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   button: {
-    backgroundColor: "#007bff",
-    padding: 12,
+    backgroundColor: "#00C000",
+    padding: 10,
     borderRadius: 8,
     width: "100%",
     alignItems: "center",
     marginVertical: 5,
   },
   buttonText: {
-    color: "#fff",
+    color: "black",
     fontSize: 16,
     fontWeight: "bold",
   },
   cancelButton: {
-    backgroundColor: "#ccc",
+    backgroundColor: "#DC143C",
   },
   cancelText: {
-    color: "#000",
+    color: "#fff",
   },
 });
 
