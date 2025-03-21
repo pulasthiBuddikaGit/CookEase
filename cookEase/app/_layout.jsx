@@ -13,14 +13,20 @@ import { store } from "../redux/store";
 export default function RootLayout() {
   return(
     <Provider store={store}>
-    <Stack>
-      <Stack.Screen name="auth/index" options={{ headerShown: true }} />
+      <Stack screenOptions={{
+        headerStyle: { backgroundColor: '#00796b' },
+        headerTintColor: '#fff', 
+        headerTitleStyle: { fontSize: 20, fontWeight: 'bold' },
+        headerTitleAlign: 'center',
+      }}>
+    
+      <Stack.Screen name="auth/index" options={{ headerShown: true , title:"Login page"}} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       
-      <Stack.Screen name="screens/n-screens/CreateDiet" options={{ title: "Create Diet Plan" }} />
-      <Stack.Screen name="screens/n-screens/GeneratedDiet" options={{ title: "Generated Diet Plan" }} />
-      <Stack.Screen name="screens/n-screens/CurrentDiet" options={{ title: "Current Diet Plan" }} />
-      <Stack.Screen name="screens/n-screens/DietHistory" options={{ title: "Diet Plan History" }} />
+      <Stack.Screen name="screens/n-screens/CreateDiet" options={{ title: "Diet Plan Creation" }} />
+      <Stack.Screen name="screens/n-screens/GeneratedDiet" options={{ title: "Your Personalized Diet Plan" }} />
+      <Stack.Screen name="screens/n-screens/CurrentDiet" options={{ title: "Your Current Diet Plan" }} />
+      <Stack.Screen name="screens/n-screens/DietHistory" options={{ title: "My History" }} />
       <Stack.Screen name="screens/n-screens/PreviousDiet" options={{ title: "Previous Diet Plan" }} />
 
     </Stack> 
