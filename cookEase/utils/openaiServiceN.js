@@ -22,7 +22,7 @@ export const generateDietPlan = async (userData) => {
       - Calorie Target: ${calories} Kcal
       - Medical Conditions: ${selectedConditions.join(', ')}
       
-      Please provide a detailed one day meal plan with breakfast, lunch and dinner.
+      Please provide a detailed one day meal plan that is align with sri lankan people and sri lankan economy with breakfast, lunch and dinner.
       Include food items, portions, and approximate calories per meal,and the instructions for making the meal but straight to the point
       and the total calorie count for the day in the end of the complete meal plan .thats it and
       dont add any tips or recommondations or snacks or anything, 
