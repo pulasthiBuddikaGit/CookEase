@@ -6,14 +6,17 @@ import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarStyle: { backgroundColor: '#f0f0f0', height: 60 },
-        tabBarLabelStyle: { fontSize: 14 },
-        tabBarActiveTintColor: '#00796b',
-        tabBarInactiveTintColor: '#494949',
-      }}
-    >
+
+    <Tabs screenOptions={({
+      tabBarStyle: { backgroundColor: '#d4edda', height: 60 },
+      tabBarLabelStyle: { fontSize: 14 },
+      tabBarActiveTintColor: '#00796b',
+      tabBarInactiveTintColor: '#494949',
+      headerStyle: { backgroundColor: '#00796b' },
+      headerTintColor: '#fffbf1',
+      headerTitleStyle: { fontWeight: 'bold' },
+      headerTitleAlign: 'center',
+    })}>
       <Tabs.Screen
         name="index"
         options={{
@@ -26,7 +29,9 @@ export default function TabLayout() {
         name="meal"
         options={{
           title: 'My Meals',
-          tabBarIcon: ({ color }) => <MaterialIcons name="ramen-dining" size={28} color={color} />,
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="ramen-dining" size={28} color={color} />
+          ),
           tabBarLabel: 'Meal',
         }}
       />
@@ -41,8 +46,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="user"
         options={{
-          title: 'My Profile',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="user-o" color={color} />,
+          title: 'My profile',
+          tabBarIcon: ({ color }) => (<MaterialCommunityIcons size={30} name="account" color={color} />),
           tabBarLabel: 'Profile',
         }}
       />
