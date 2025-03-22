@@ -1,14 +1,16 @@
 // app/(tabs)/user.jsx
 import React, { useState, useEffect } from 'react';
-import { Text, View, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Text, View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { signOut } from 'firebase/auth';
+import { signOut, deleteUser } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
 
 const User = () => {
   const [status, setStatus] = useState('');
   const [photoURL, setPhotoURL] = useState(null); // Initialize as null
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false); // State for modal visibility
   const defaultPhotoURL = 'https://www.pngitem.com/pimgs/m/146-1468479_default-profile-picture-png-transparent-png.png'; // Default silhouette
   const router = useRouter();
 
@@ -57,27 +59,32 @@ const User = () => {
   };
 
   const handleDeleteAccount = () => {
-    // Show confirmation pop-up
-    Alert.alert(
-      'Confirm Delete',
-      'Are you sure you want to delete your account? This action cannot be undone.',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-          onPress: () => console.log('Delete canceled'), // Close the pop-up
-        },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            // For now, do nothing (as per request)
-            console.log('Delete confirmed (no action taken)');
-          },
-        },
-      ],
-      { cancelable: true }
-    );
+    // Show the delete confirmation modal
+    setIsDeleteModalVisible(true);
+  };
+
+  const handleDeleteCancel = () => {
+    // Close the modal
+    setIsDeleteModalVisible(false);
+    console.log('Delete canceled');
+  };
+
+  const handleDeleteConfirm = async () => {
+    // Close the modal
+    setIsDeleteModalVisible(false);
+
+    try {
+      setStatus('Deleting account...');
+      // Delete the user's account
+      const user = auth.currentUser;
+      await deleteUser(user);
+      setStatus('Account deleted successfully');
+      // Navigate to the auth screen after deletion
+      router.replace('/auth');
+    } catch (error) {
+      setStatus(`Error deleting account: ${error.message}`);
+      Alert.alert('Error', error.message);
+    }
   };
 
   return (
@@ -107,6 +114,13 @@ const User = () => {
           <Text style={[styles.buttonText, styles.deleteButtonText]}>Delete Account</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        visible={isDeleteModalVisible}
+        onCancel={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+      />
     </View>
   );
 };
