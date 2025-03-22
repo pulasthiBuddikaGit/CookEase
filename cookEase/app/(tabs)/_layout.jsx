@@ -1,10 +1,12 @@
+// app/(tabs)/_layout.jsx
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import {MaterialIcons} from '@expo/vector-icons';
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
   return (
+
     <Tabs screenOptions={({
       tabBarStyle: { backgroundColor: '#d4edda', height: 60 },
       tabBarLabelStyle: { fontSize: 14 },
@@ -12,45 +14,49 @@ export default function TabLayout() {
       tabBarInactiveTintColor: '#494949',
       headerStyle: { backgroundColor: '#00796b' },
       headerTintColor: '#fffbf1',
-      headerTitleStyle: { fontWeight:'bold'},
+      headerTitleStyle: { fontWeight: 'bold' },
       headerTitleAlign: 'center',
-      })}>
+    })}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'CookEase',
-          tabBarIcon: ({ color }) => (<FontAwesome size={28} name="home" color={color} />)
-          ,
-          tabBarLabel: 'Home', 
+          tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
+          tabBarLabel: 'Home',
         }}
       />
       <Tabs.Screen
         name="meal"
         options={{
           title: 'My Meals',
-          tabBarIcon: ({ color }) =>( 
-            <MaterialIcons name="ramen-dining" size={28} color={color} /> 
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="ramen-dining" size={28} color={color} />
           ),
-          tabBarLabel: 'Meal',  
+          tabBarLabel: 'Meal',
         }}
       />
-        <Tabs.Screen
+      <Tabs.Screen
         name="diet"
         options={{
           title: 'My Diet Plans',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="food-apple" size={28} color={color} />
-          ),
-          tabBarLabel: 'Diet',         
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="food-apple" size={28} color={color} />,
+          tabBarLabel: 'Diet',
         }}
       />
-        <Tabs.Screen
+      <Tabs.Screen
         name="user"
         options={{
           title: 'My profile',
           tabBarIcon: ({ color }) => (<MaterialCommunityIcons size={30} name="account" color={color} />),
-          tabBarLabel: 'Profile', 
-          
+          tabBarLabel: 'Profile',
+        }}
+      />
+      <Tabs.Screen
+        name="admin"
+        options={{
+          title: 'Admin Portal',
+          tabBarIcon: ({ color }) => <FontAwesome size={28} name="dashboard" color={color} />,
+          tabBarLabel: 'Admin',
         }}
       />
     </Tabs>
