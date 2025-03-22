@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import ImageProcessing from '../../screens/p-screens/ImageProcessing ';
+import ImageProcessing from '../../utils/ImageProcessing ';
 
 const Meal = () => {
     return (

@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { View, Image, Alert, StyleSheet } from "react-native";
 import { launchImageLibrary, launchCamera } from "react-native-image-picker";
 import * as ImagePicker from 'expo-image-picker';
-import CameraButton from "../../components/p-components/CameraBtn";
-import SelectionPopup from "../../components/p-components/SelectionPopup";
+import CameraButton from "../components/p-components/CameraBtn";
+import SelectionPopup from "../components/p-components/SelectionPopup";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
