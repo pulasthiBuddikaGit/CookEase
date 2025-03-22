@@ -113,6 +113,10 @@ const User = () => {
           <Icon name="delete" size={20} color="#ff0000" style={styles.buttonIcon} />
           <Text style={[styles.buttonText, styles.deleteButtonText]}>Delete Account</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleSignOut}>
+          <Icon name="logout" size={20} color="#000" style={styles.buttonIcon} />
+          <Text style={styles.buttonText}>Sign Out</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Delete Confirmation Modal */}
