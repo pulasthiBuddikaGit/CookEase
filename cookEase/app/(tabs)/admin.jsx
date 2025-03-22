@@ -149,11 +149,6 @@ export default function Admin() {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerSubtitle}>Admin Portal</Text>
-      </View>
-
       {/* User Age Group Section */}
       <View style={[styles.card, { minHeight: chartHeight + 50 }]}>
         <Text style={styles.cardTitle}>User Age Group</Text>
@@ -308,24 +303,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-  },
-  header: {
-    alignItems: 'center',
-    paddingVertical: 20,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  headerSubtitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#4caf50',
-    marginTop: 5,
   },
   card: {
     backgroundColor: '#fff',
