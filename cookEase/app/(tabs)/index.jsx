@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect, useRef } from "react";
 import { LinearGradient } from "expo-linear-gradient"; // Using expo-linear-gradient for gradient background
 
+
 export default function Index() {
   const count = useSelector((state) => state.counter.value);
   const dispatch = useDispatch();
