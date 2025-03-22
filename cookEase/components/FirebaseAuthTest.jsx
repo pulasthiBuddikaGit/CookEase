@@ -66,7 +66,7 @@ export default function FirebaseAuthTest() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Firebase Auth Test</Text>
+      <Text style={styles.title}>Firebase Authentication</Text>
       
       <Text style={styles.status}>{status}</Text>
       
