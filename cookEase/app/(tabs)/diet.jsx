@@ -186,7 +186,7 @@ export default function DietPlanScreen() {
       infoText2: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#00544a',
+        color: '#00796b',
 
         },
 
