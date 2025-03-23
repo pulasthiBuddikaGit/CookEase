@@ -2,6 +2,8 @@
 import { Stack } from "expo-router";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
+import RecipeInput from "./screens/RecipeInput";
+import RecipeDetails from "./screens/RecipeDetails";
 
 
 // This is the root layout of the app. It is the first component that is rendered when the app starts.
@@ -16,9 +18,23 @@ export default function RootLayout() {
 
   return(
     <Provider store={store}>
-    <Stack>
-      <Stack.Screen name="auth/index" options={{ headerShown: true }} />
+      <Stack screenOptions={{
+        headerStyle: { backgroundColor: '#00796b' },
+        headerTintColor: '#fff', 
+        headerTitleStyle: { fontSize: 20, fontWeight: 'bold' },
+        headerTitleAlign: 'center',
+      }}>
+    
+      <Stack.Screen name="auth/index" options={{ headerShown: true , title:"Login page"}} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="screens/n-screens/CreateDiet" options={{ title: "Diet Plan Creation" }} />
+      <Stack.Screen name="screens/n-screens/GeneratedDiet" options={{ title: "Your Personalized Diet Plan" }} />
+      <Stack.Screen name="screens/n-screens/CurrentDiet" options={{ title: "Your Current Diet Plan" }} />
+      <Stack.Screen name="screens/n-screens/DietHistory" options={{ title: "My History" }} />
+      <Stack.Screen name="screens/n-screens/PreviousDiet" options={{ title: "Previous Diet Plan" }} />
+      <Stack.Screen name="account/edit" options={{ headerShown: true }} />
+      <Stack.Screen name="RecipeInput" options={{RecipeInput}} />
+      <Stack.Screen name="RecipeDetails" options={{ RecipeDetails}} />
     </Stack> 
     </Provider>
   );
