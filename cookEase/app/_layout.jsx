@@ -1,6 +1,8 @@
+
 import { Stack } from "expo-router";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
+
 
 // This is the root layout of the app. It is the first component that is rendered when the app starts.
 // It is responsible for setting up the Redux store and the navigation stack.
@@ -11,6 +13,7 @@ import { store } from "../redux/store";
 // The options prop is used to configure the screen.
 
 export default function RootLayout() {
+
   return(
     <Provider store={store}>
     <Stack>

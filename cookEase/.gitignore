@@ -41,3 +41,5 @@ firebaseConfig.js
 google-services.json
 
 android
+expo-env.d.ts
+.env
