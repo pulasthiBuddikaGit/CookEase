@@ -1,92 +1,78 @@
-import React from 'react';
-import { Text, View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-import { useRouter} from 'expo-router';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { useLocalSearchParams } from "expo-router";
+import { getDietPlanById } from "../../../services/nisalka/dietService";  // Assuming you have a function to fetch by id
 
 export default function PreviousDiet() {
-    const router = useRouter();
+  const router = useRouter();
+  const [dietPlan, setDietPlan] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Destructure safely to avoid issues if `router.query` is undefined
+  const { id } = useLocalSearchParams(); // Ensure router.query is defined before accessing 'id'
 
-  const dietPlan = {
-    breakfast: { items: ['Oatmeal with Fruits', 'Green Smoothie'], calories: 400 },
-    lunch: { items: ['Grilled Chicken Salad', 'Quinoa with Vegetables'], calories: 600 },
-    dinner: { items: ['Baked Salmon', 'Brown Rice'], calories: 500 },
-    totalCalories: 1500,
-  };
+  // Log the router query to check if 'id' is being passed properly
+  useEffect(() => {
+    console.log("Router Query:", router.query); // Check if 'id' is present here
+  }, [router.query]);
 
+  useEffect(() => {
+    // Only proceed if `id` is available in router.query
+    if (id) {
+      const fetchDietPlan = async () => {
+        try {
+          setLoading(true); // Set loading state to true before fetch
+          const data = await getDietPlanById(id);
+          console.log("Fetched Diet Plan:", data);
+          setDietPlan(data);
+        } catch (error) {
+          console.error("Error fetching diet plan:", error);
+        } finally {
+          setLoading(false); // Stop loading once data is fetched or error
+        }
+      };
+
+      fetchDietPlan();
+    } else {
+      console.log("No diet ID available in query");
+      setLoading(false); // Stop loading if no ID is found
+    }
+  }, [id]); // Run the effect when `id` changes or updates
+
+  // If loading, show a loading message
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
+
+  // If diet plan is not found, display a message
+  if (!dietPlan) {
+    return <Text>No diet plan found.</Text>;
+  }
+
+  // Render the fetched diet plan
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <View style={styles.container}>
-        <View style={styles.dietBox}>
-          <Text style={styles.title}>Your Diet Plan</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>{dietPlan.diet_plan_name}</Text>
+      <Text style={styles.text}>Date Created: {dietPlan.date_created ? dietPlan.date_created.toDate().toLocaleString() : "N/A"}</Text>
+      <Text style={styles.text}>Total Calories: {dietPlan.total_calories} kcal</Text>
+      <Text style={styles.text}>Weight: {dietPlan.weight} kg</Text>
+      <Text style={styles.text}>Height: {dietPlan.height} cm</Text>
+      <Text style={styles.text}>BMI: {dietPlan.bmi}</Text>
+      <Text style={styles.text}>Diet Plan Details:</Text>
+      <Text style={styles.text}>{dietPlan.diet_plan}</Text>
 
-          {/* Breakfast */}
-          <View style={styles.mealContainer}>
-            <Text style={styles.mealTitle}>🍳 Breakfast</Text>
-            {dietPlan.breakfast.items.map((item, index) => (
-              <Text key={index} style={styles.meal}>{item}</Text>
-            ))}
-            <Text style={styles.caloriesText}> Calories: {dietPlan.breakfast.calories} kcal</Text>
-          </View>
-
-          {/* Lunch */}
-          <View style={styles.mealContainer}>
-            <Text style={styles.mealTitle}>🥗 Lunch</Text>
-            {dietPlan.lunch.items.map((item, index) => (
-              <Text key={index} style={styles.meal}>{item}</Text>
-            ))}
-            <Text style={styles.caloriesText}> Calories: {dietPlan.lunch.calories} kcal</Text>
-          </View>
-
-          {/* Dinner */}
-          <View style={styles.mealContainer}>
-            <Text style={styles.mealTitle}>🍽️ Dinner</Text>
-            {dietPlan.dinner.items.map((item, index) => (
-              <Text key={index} style={styles.meal}>{item}</Text>
-            ))}
-            <Text style={styles.caloriesText}> Calories: {dietPlan.dinner.calories} kcal</Text>
-          </View>
-        </View>
-        <TouchableOpacity style={styles.deleteButton} onPress={() => router.push('/diet')}>
-            <Text style={styles.deleteButtonText}>Delete Diet Plan</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity style={styles.deleteButton} onPress={() => router.push('/diet')}>
+        <Text style={styles.deleteButtonText}>Delete Diet Plan</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContainer: { flexGrow: 1,backgroundColor: '#f9fffb', },
-  container: { flex: 1, alignItems: 'center', padding: 16 },
-  dietBox: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    marginBottom: 20,
-    width: '95%',
-  },
-  title: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 25, color: 'black' },
-  mealContainer: { marginBottom: 15, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#ddd' },
-  mealTitle: { fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 5 },
-  meal: { fontSize: 16, color: '#555', paddingLeft: 10 },
-  caloriesText: { fontSize: 16, fontWeight: 'bold', color: '#00796b', marginTop: 5 },
-  deleteButton: {
-    backgroundColor: "#F55E5E",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 8,
-    marginTop: 20,
-    width: "95%",
-  },
-  deleteButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
+  container: { flexGrow: 1, padding: 20, backgroundColor: '#f9fffb' },
+  title: { fontSize: 22, fontWeight: "bold", marginBottom: 15, textAlign: "center" },
+  text: { fontSize: 16, color: "black", marginBottom: 10 },
+  deleteButton: {backgroundColor: "#ffcfcf",paddingVertical: 12,paddingHorizontal: 25,borderRadius: 8,marginTop: 10,width: "95%",},
+  deleteButtonText: {color: "#ee0808",fontSize: 18,fontWeight: "bold",textAlign: "center",},
 });
