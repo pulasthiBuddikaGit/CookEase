@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from "expo-router";
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, FlatList, RefreshControl } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { getLatestDietPlan } from '../../services/nisalka/dietService';
 
@@ -9,6 +9,7 @@ export default function DietPlanScreen() {
   const [dietPlan, setDietPlan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const userId = getAuth().currentUser?.uid;
 
@@ -44,12 +45,36 @@ export default function DietPlanScreen() {
     };
   }, [userId]);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      setLoading(true);
+      setError(null);
+  
+      const fetchedDietPlan = await getLatestDietPlan(userId);
+      if (fetchedDietPlan) {
+        setDietPlan(fetchedDietPlan);
+      } else {
+        setError("No diet plan available");
+      }
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false); // Stop the refresh indicator
+    }
+  };
+
+
   return (
     <ScrollView 
       decelerationRate="fast" 
       scrollEventThrottle={16} 
       contentContainerStyle={styles.scrollContainer} 
       showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       <View style={styles.container}>
         <Text style={styles.title}>Your Health Overview</Text>

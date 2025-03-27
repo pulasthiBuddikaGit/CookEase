@@ -1,5 +1,5 @@
 import { db } from "../../firebaseConfig";
-import { collection, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs } from "firebase/firestore";  // Ensure serverTimestamp is imported
+import { collection,doc, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs,updateDoc,getDoc } from "firebase/firestore";  // Ensure serverTimestamp is imported
 import { getAuth } from "firebase/auth";
 
 // Function to save a diet plan
@@ -147,5 +147,58 @@ export const getDietPlanById = async (dietId) => {
   } catch (error) {
     console.error("❌ Error fetching diet plan by id:", error);
     throw error;
+  }
+};
+
+
+
+
+// Function to update an existing diet plan
+export const updateDietPlan = async (dietId, dietPlanName, weight, height, bmi, dietPlan, totalCalories) => {
+  try {
+    const auth = getAuth();
+    const userId = auth.currentUser?.uid;
+
+    if (!userId) {
+      throw new Error('User not logged in');
+    }
+
+    // Ensure weight, height, bmi, and totalCalories are numbers
+    const weightValue = weight ? parseFloat(weight) : 0;
+    const heightValue = height ? parseFloat(height) : 0;
+    const bmiValue = bmi ? parseFloat(bmi) : 0;
+    const totalCaloriesValue = totalCalories ? parseFloat(totalCalories) : 0;
+
+    // Ensure diet_plan is a string
+    const dietPlanText = dietPlan || 'No diet plan available';
+
+    // Prepare the updated data object
+    const updatedDietData = {
+      diet_plan_name: dietPlanName || 'Unnamed Plan',
+      weight: weightValue,
+      height: heightValue,
+      bmi: bmiValue,
+      diet_plan: dietPlanText,
+      total_calories: totalCaloriesValue,
+      date_created: serverTimestamp(),  // Avoid overwriting the creation date, if it's not necessary
+    };
+
+    // Query Firestore to find the document by diet_id
+    const dietQuery = query(collection(db, 'DietPlans'), where('diet_id', '==', dietId));
+    const querySnapshot = await getDocs(dietQuery);
+
+    if (querySnapshot.empty) {
+      throw new Error(`No document found with diet_id: ${dietId}`);
+    }
+
+    // Get the document reference
+    const dietDocRef = doc(db, 'DietPlans', querySnapshot.docs[0].id);
+
+    // Update the document in Firestore
+    await updateDoc(dietDocRef, updatedDietData);
+
+    console.log('✅ Diet plan updated successfully!');
+  } catch (error) {
+    console.error('❌ Error updating diet plan:', error.message);
   }
 };
