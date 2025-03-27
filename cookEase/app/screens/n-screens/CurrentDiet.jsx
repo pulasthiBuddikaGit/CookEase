@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, TextInput, Alert,RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
-import { getLatestDietPlan, updateDietPlan } from '../../../services/nisalka/dietService'; // Import your diet fetching function
+import { getLatestDietPlan, updateDietPlan,deleteDietPlan } from '../../../services/nisalka/dietService'; // Import your diet fetching function
 
 export default function CurrentDiet() {
   const router = useRouter();
@@ -67,6 +67,35 @@ export default function CurrentDiet() {
       }
     }
   };
+
+  const handleDeleteDietPlan = async () => {
+    if (dietPlan) {
+      Alert.alert(
+        "Confirm Deletion",
+        "Are you sure you want to delete this diet plan?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel"
+          },
+          {
+            text: "Delete",
+            onPress: async () => {
+              try {
+                await deleteDietPlan(dietPlan.diet_id);
+                Alert.alert("Success", "Your diet plan has been deleted.");
+                router.push('/diet'); // Redirect after deletion
+              } catch (error) {
+                Alert.alert("Error", "Failed to delete diet plan.");
+              }
+            },
+            style: "destructive"
+          }
+        ]
+      );
+    }
+  };
+
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -155,7 +184,7 @@ export default function CurrentDiet() {
           </TouchableOpacity>
         )}
         
-        <TouchableOpacity style={styles.deleteButton} onPress={() => router.push('/diet')}>
+        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteDietPlan}>
           <Text style={styles.deleteButtonText}>Delete Diet Plan</Text>
         </TouchableOpacity>
       </View>

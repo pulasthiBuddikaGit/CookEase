@@ -1,5 +1,5 @@
 import { db } from "../../firebaseConfig";
-import { collection,doc, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs,updateDoc,getDoc } from "firebase/firestore";  // Ensure serverTimestamp is imported
+import { collection,doc, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs,updateDoc,deleteDoc } from "firebase/firestore";  // Ensure serverTimestamp is imported
 import { getAuth } from "firebase/auth";
 
 // Function to save a diet plan
@@ -200,5 +200,35 @@ export const updateDietPlan = async (dietId, dietPlanName, weight, height, bmi, 
     console.log('✅ Diet plan updated successfully!');
   } catch (error) {
     console.error('❌ Error updating diet plan:', error.message);
+  }
+};
+
+
+// Function to delete a diet plan by diet_id (only for the logged-in user)
+export const deleteDietPlan = async (dietId) => {
+  try {
+    const auth = getAuth();
+    const userId = auth.currentUser?.uid;
+
+    if (!userId) {
+      throw new Error("User not logged in");
+    }
+
+    // Query Firestore to find the document by diet_id and user_id
+    const dietQuery = query(collection(db, "DietPlans"), where("diet_id", "==", dietId), where("user_id", "==", userId));
+    const querySnapshot = await getDocs(dietQuery);
+
+    if (querySnapshot.empty) {
+      throw new Error(`No diet plan found with ID: ${dietId} for this user.`);
+    }
+
+    // Get the document reference and delete it
+    const dietDocRef = doc(db, "DietPlans", querySnapshot.docs[0].id);
+    await deleteDoc(dietDocRef);
+
+    console.log(`✅ Diet plan with ID ${dietId} deleted successfully.`);
+  } catch (error) {
+    console.error("❌ Error deleting diet plan:", error);
+    throw error;
   }
 };

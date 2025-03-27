@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet,RefreshControl } from "react-native";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { getPreviousDietPlans } from "../../../services/nisalka/dietService";  // Import the new function
@@ -6,6 +6,8 @@ import { getPreviousDietPlans } from "../../../services/nisalka/dietService";  /
 export default function DietHistoryScreen() {
   const router = useRouter();
   const [historyData, setHistoryData] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  
 
   // Fetch the diet plans on component mount
   useEffect(() => {
@@ -22,8 +24,25 @@ export default function DietHistoryScreen() {
     fetchDietHistory();
   }, []);
 
+  // Handle refresh action
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const data = await getPreviousDietPlans();  // Fetch the diet history again
+      setHistoryData(data);  // Update the state with new data
+    } catch (error) {
+      console.error("Error refreshing diet history:", error);
+    } finally {
+      setRefreshing(false);  // Stop refreshing
+    }
+  };
+
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}
+    refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    }>
       <Text style={styles.title}>Diet Plan History</Text>
       {historyData.map((item) => (
         <TouchableOpacity

@@ -1,8 +1,8 @@
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
-import { getDietPlanById } from "../../../services/nisalka/dietService";  // Assuming you have a function to fetch by id
+import { getDietPlanById, deleteDietPlan } from "../../../services/nisalka/dietService";  // Assuming you have a function to fetch by id
 
 export default function PreviousDiet() {
   const router = useRouter();
@@ -40,6 +40,34 @@ export default function PreviousDiet() {
     }
   }, [id]); // Run the effect when `id` changes or updates
 
+   // Function to handle the delete action
+   const handleDelete = async () => {
+    Alert.alert(
+      "Delete Diet Plan",
+      "Are you sure you want to delete this diet plan?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            try {
+              await deleteDietPlan(id);
+              Alert.alert("Success", "Diet plan deleted successfully.");
+              router.push("/diet");
+            } catch (error) {
+              Alert.alert("Error", "Failed to delete diet plan. Please try again.");
+            }
+          },
+          style: "destructive",
+        },
+      ]
+    );
+  };
+
+  
   // If loading, show a loading message
   if (loading) {
     return <Text>Loading...</Text>;
@@ -62,7 +90,7 @@ export default function PreviousDiet() {
       <Text style={styles.text}>Diet Plan Details:</Text>
       <Text style={styles.text}>{dietPlan.diet_plan}</Text>
 
-      <TouchableOpacity style={styles.deleteButton} onPress={() => router.push('/diet')}>
+      <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
         <Text style={styles.deleteButtonText}>Delete Diet Plan</Text>
       </TouchableOpacity>
     </ScrollView>
