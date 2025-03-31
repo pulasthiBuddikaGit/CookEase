@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 25, color: '#000' },
   mealContainer: { backgroundColor: '#fff', marginBottom: 15, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#ddd' },
   mealTitle: { fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 5 },
-  meal: { fontSize: 16, color: '#555', paddingLeft: 10 },
+  meal: { fontSize: 16, color: 'black', paddingLeft: 10 },
   caloriesText: { fontSize: 16, fontWeight: 'bold', color: '#00796b', marginTop: 5 },
   editButton: { backgroundColor: '#d4edda', paddingVertical: 12, paddingHorizontal: 25, borderRadius: 8, marginTop: 10, width: '95%', },
   editButtonText: { color: "#000000", fontSize: 18, fontWeight: "bold", textAlign: "center", },

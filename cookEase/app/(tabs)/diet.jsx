@@ -176,8 +176,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4,
   },
   title: { fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginBottom: 25, marginTop: 10, color: '#000' },
-  mealTitle: { fontSize: 16, fontWeight: 'bold', color: '#333', marginBottom: 5 },
-  meal: { fontSize: 16, color: '#555', paddingLeft: 10 },
+  mealTitle: { fontSize: 16, fontWeight: 'bold', color: '#00796b', marginBottom: 5 },
+  meal: { fontSize: 16, color: '#000', paddingLeft: 10 },
   errorText: { color: 'red', fontSize: 16, textAlign: 'center', marginTop: 10 },
 
     // Custom button styles view more

@@ -88,7 +88,7 @@ export default function PreviousDiet() {
       <Text style={styles.text}>Height: {dietPlan.height} cm</Text>
       <Text style={styles.text}>BMI: {dietPlan.bmi}</Text>
       <Text style={styles.text}>Diet Plan Details:</Text>
-      <Text style={styles.text}>{dietPlan.diet_plan}</Text>
+      <Text style={styles.text2}>{dietPlan.diet_plan}</Text>
 
       <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
         <Text style={styles.deleteButtonText}>Delete Diet Plan</Text>
@@ -98,9 +98,10 @@ export default function PreviousDiet() {
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, padding: 20, backgroundColor: '#f9fffb' },
+  container: { flexGrow: 1, padding: 20, backgroundColor: '#f9fffb', },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 15, textAlign: "center" },
-  text: { fontSize: 16, color: "black", marginBottom: 10 },
-  deleteButton: {backgroundColor: "#ffcfcf",paddingVertical: 12,paddingHorizontal: 25,borderRadius: 8,marginTop: 10,width: "95%",},
+  text: { fontSize: 16, color: "black", marginBottom: 10,fontWeight: "bold" },
+  text2: { fontSize: 16, color: "black", marginBottom: 10 },
+  deleteButton: {justifyContent:"center" ,backgroundColor: "#ffcfcf",paddingVertical: 12,paddingHorizontal: 25,borderRadius: 8,marginTop: 10,width: "95%",},
   deleteButtonText: {color: "#ee0808",fontSize: 18,fontWeight: "bold",textAlign: "center",},
 });

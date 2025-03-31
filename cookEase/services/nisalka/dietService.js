@@ -2,6 +2,8 @@ import { db } from "../../firebaseConfig";
 import { collection,doc, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs,updateDoc,deleteDoc } from "firebase/firestore";  // Ensure serverTimestamp is imported
 import { getAuth } from "firebase/auth";
 
+
+
 // Function to save a diet plan
 export const saveDietPlan = async (dietPlanName, weight, height, bmi, dietPlan, totalCalories) => {
   try {
@@ -43,6 +45,8 @@ export const saveDietPlan = async (dietPlanName, weight, height, bmi, dietPlan, 
   }
 };
 
+
+
 // Function to fetch the latest diet plan
 export const getLatestDietPlan = async () => {
   try {
@@ -76,6 +80,8 @@ export const getLatestDietPlan = async () => {
     throw error;
   }
 };
+
+
 
 // Function to fetch all previous diet plans (excluding the latest one)
 export const getPreviousDietPlans = async () => {
@@ -129,6 +135,9 @@ export const getPreviousDietPlans = async () => {
   }
 };
 
+
+
+
 // Function to fetch a specific diet plan by diet_id
 export const getDietPlanById = async (dietId) => {
   try {
@@ -149,6 +158,8 @@ export const getDietPlanById = async (dietId) => {
     throw error;
   }
 };
+
+
 
 
 
@@ -204,6 +215,9 @@ export const updateDietPlan = async (dietId, dietPlanName, weight, height, bmi, 
 };
 
 
+
+
+
 // Function to delete a diet plan by diet_id (only for the logged-in user)
 export const deleteDietPlan = async (dietId) => {
   try {
@@ -229,6 +243,45 @@ export const deleteDietPlan = async (dietId) => {
     console.log(`✅ Diet plan with ID ${dietId} deleted successfully.`);
   } catch (error) {
     console.error("❌ Error deleting diet plan:", error);
+    throw error;
+  }
+};
+
+
+
+
+export const getUserDietPlans = async (userId) => {
+  try {
+    const dietPlansRef = collection(db, "DietPlans");
+
+    // Ensure Firestore knows the index order explicitly
+    const q = query(
+      dietPlansRef,
+      where("user_id", "==", userId),
+      orderBy("user_id"), // Explicitly order by user_id first
+      orderBy("date_created", "asc") // Sorted by date (oldest to newest)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      console.log("No diet plans found for this user");
+      return [];
+    }
+
+    // Convert Firestore data into an array
+    const dietPlans = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        ...data,
+        date_created: data.date_created ? data.date_created.toDate() : null, // Convert Firestore Timestamp to Date
+      };
+    });
+
+    return dietPlans;
+  } catch (error) {
+    console.error("❌ Error fetching user diet plans:", error.message || error);
+    console.error("ℹ️ Possible Fix: Ensure the Firestore index exists and is enabled.");
     throw error;
   }
 };
