@@ -8,11 +8,11 @@ const SelectionPopup = ({ visible, onSelect, onClose, emojiOne, emojiTwo }) => {
       <View style={styles.overlay}>
         <View style={styles.popup}>
           <Text style={styles.title}>Select What You Wanna Scan</Text>
-          <TouchableOpacity style={styles.button} onPress={() => onSelect("text")}>
-            <Text style={styles.buttonText}>{emojiOne}</Text>
+          <TouchableOpacity style={styles.button} onPress={() => onSelect("package")}>
+            <Text style={styles.buttonText}>{emojiOne} Package</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => onSelect("label")}>
-            <Text style={styles.buttonText}>{emojiTwo}</Text>
+          <TouchableOpacity style={styles.button} onPress={() => onSelect("ingredient")}>
+            <Text style={styles.buttonText}>{emojiTwo} Ingrediant</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onClose}>
             <Text style={styles.cancelText}>Cancel</Text>
