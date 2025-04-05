@@ -8,6 +8,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import axios from "axios";
 import * as FileSystem from 'expo-file-system';
 import Constants from 'expo-constants';
+import { useRouter } from 'expo-router';
 import {
   setImageUri,
   setLabels,
@@ -18,14 +19,14 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 
 
-const ImageProcessing = () => {
-  
+const ImageProcessing = () => { 
   // const [imageUri, setImageUri] = useState(null);
   // const [popupVisible, setPopupVisible] = useState(false);
   // const [labels, setLabels] = useState([]);
-
   const dispatch = useDispatch();
   const { imageUri, popupVisible, scanType, labels, texts } = useSelector((state) => state.imageProcessing);
+
+  const router = useRouter();
 
 const pickImage = async () => {
   try{  
@@ -104,8 +105,8 @@ const handleImageResult = (result) => {
   try{  
     if (!result.canceled && result.assets) {
     dispatch(setImageUri(result.assets[0].uri));
+    router.push('screens/analyzeImage');
     //dispatch(setPopupVisible(true));
-    // analyzeImage(result.assets[0].uri);
     }
   }catch(error){
     console.log('Error handling image result:',error);
@@ -190,12 +191,12 @@ const handleSelection = (type) => {
 return (
   <View style={styles.container}>
 
-      {imageUri && 
+      {/* {imageUri && 
         <Image 
           source={{ uri: imageUri }}
           style={styles.image} 
         />
-      }
+      } */}
 
       <CameraButton 
         emoji={<MaterialIcons name="center-focus-weak" size={28}/>} 
@@ -210,12 +211,12 @@ return (
         emojiTwo={<MaterialCommunityIcons name="carrot" size={29}/>}
       />
 
-      <TouchableOpacity style={styles.button} onPress={()=>analyzeImage(imageUri)}>
+      {/* <TouchableOpacity style={styles.button} onPress={()=>analyzeImage(imageUri)}>
         <Text style={styles.buttonText}>Analyze Image</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       
       {/* Display results based on scan type */}
-      {scanType === 'ingredient' && labels.length > 0 && (
+      {/* {scanType === 'ingredient' && labels.length > 0 && (
         <View style={{marginTop: 20}}>
           <Text style={{fontSize: 18, fontWeight: 'bold'}}>Ingredients Detected:</Text>
           {labels.map((label, index) => (
@@ -224,9 +225,9 @@ return (
             </Text>
           ))}
         </View>
-      )}
+      )} */}
 
-      {scanType === 'package' && texts.length > 0 && (
+      {/* {scanType === 'package' && texts.length > 0 && (
         <View style={{marginTop: 20}}>
           <Text style={{fontSize: 18, fontWeight: 'bold'}}>Package Text:</Text>
           {texts[0] && (  // The first element contains the full text
@@ -239,7 +240,7 @@ return (
             </Text>
           ))}
         </View>
-      )}
+      )} */}
     </View>
   );
 };

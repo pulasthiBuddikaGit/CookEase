@@ -76,21 +76,21 @@ export default function RecipeInput() {
 
         <ImageProcessing/> */}
 
-<View style={{ flexDirection: "row", alignItems: "center" }}>
-  <View style={{ flex: 1 }}>
-    <TextInput
-      style={[styles.input, error ? styles.inputError : null]}
-      placeholder="Please enter at least two ingredients. E.g. Chicken, Rice, Onion..."
-      value={ingredients}
-      onChangeText={validateIngredients}
-    />
-    {error ? <Text style={styles.errorText}>{error}</Text> : null}
-  </View>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flex: 1 }}>
+          <TextInput
+            style={[styles.input, error ? styles.inputError : null]}
+            placeholder="Please enter at least two ingredients. E.g. Chicken, Rice, Onion..."
+            value={ingredients}
+            onChangeText={validateIngredients}
+          />
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        </View>
 
-  <View style={{ marginLeft: 10 }}>
-    <ImageProcessing />
-  </View>
-</View>
+        <View style={{ marginLeft: 10 }}>
+          <ImageProcessing />
+        </View>
+      </View>
 
 
         <Text style={styles.title}>Select Cooking Time</Text>

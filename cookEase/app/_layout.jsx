@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import { store } from "../redux/store";
 import RecipeInput from "./screens/RecipeInput";
 import RecipeDetails from "./screens/RecipeDetails";
+import analyzeImage from "./screens/analyzeImage";
 
 
 // This is the root layout of the app. It is the first component that is rendered when the app starts.
@@ -32,9 +33,10 @@ export default function RootLayout() {
       <Stack.Screen name="screens/n-screens/CurrentDiet" options={{ title: "Your Current Diet Plan" }} />
       <Stack.Screen name="screens/n-screens/DietHistory" options={{ title: "My History" }} />
       <Stack.Screen name="screens/n-screens/PreviousDiet" options={{ title: "Previous Diet Plan" }} />
-      <Stack.Screen name="account/edit" options={{ headerShown: true }} />
+      <Stack.Screen name="account/edit" options={{ headerShown: true, title:"Edit Account" }} />
       <Stack.Screen name="RecipeInput" options={{RecipeInput}} />
       <Stack.Screen name="RecipeDetails" options={{ RecipeDetails}} />
+      <Stack.Screen name="screens/analyzeImage/index" options={{ headerShown: true, title:"Analyze Image" }} />
     </Stack> 
     </Provider>
   );
