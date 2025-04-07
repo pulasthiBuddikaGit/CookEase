@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet,Image,TouchableOpacity,Text } from "react-native";
+import { View, StyleSheet,Image,TouchableOpacity,Text, ScrollView } from "react-native";
 import { useSelector,useDispatch } from "react-redux";
 import { setLabels, setTexts } from "../../../redux/p-slices/imageProcessingSlice"
 import * as FileSystem from 'expo-file-system';
@@ -74,55 +74,67 @@ const analyzeImage = () => {
 
   return (
     <View style={styles.container}>
+      <ScrollView style={styles.scrollView}  contentContainerStyle={styles.scrollViewContainer}>
+        {imageUri && 
+          <Image 
+            source={{ uri: imageUri }}
+            style={styles.image} 
+            resizeMode="contain"
+          />
+        }
+        <TouchableOpacity style={styles.button} onPress={()=>analyzeImageFunction(imageUri)}>
+          <Text style={styles.buttonText}>Analyze Image</Text>
+        </TouchableOpacity>
+        
+        {/* Display results based on scan type */}
+        {scanType === 'ingredient' && labels.length > 0 && (
+          <View>
+            <Text style={styles.textHeading}>Ingredients Detected:</Text>
+            {labels.map((label, index) => (
+              <Text key={index} style={styles.resultText}>
+                {label.description} ({Math.round(label.score * 100)}%)
+              </Text>
+            ))}
+            <View style={styles.resultTextBottom}></View>
+          </View>
+        )}
 
-      {imageUri && 
-        <Image 
-          source={{ uri: imageUri }}
-          style={styles.image} 
-        />
-      }
-      <TouchableOpacity style={styles.button} onPress={()=>analyzeImageFunction(imageUri)}>
-        <Text style={styles.buttonText}>Analyze Image</Text>
-      </TouchableOpacity>
-      
-      {/* Display results based on scan type */}
-      {scanType === 'ingredient' && labels.length > 0 && (
-        <View style={{marginTop: 20}}>
-          <Text style={{fontSize: 18, fontWeight: 'bold'}}>Ingredients Detected:</Text>
-          {labels.map((label, index) => (
-            <Text key={index} style={{fontSize: 16}}>
-              {label.description} ({Math.round(label.score * 100)}%)
-            </Text>
-          ))}
-        </View>
-      )}
-
-      {scanType === 'package' && texts.length > 0 && (
-        <View style={{marginTop: 20}}>
-          <Text style={{fontSize: 18, fontWeight: 'bold'}}>Package Text:</Text>
-          {texts[0] && (  // The first element contains the full text
-            <Text style={{fontSize: 16}}>{texts[0].description}</Text>
-          )}
-          <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 10}}>Text Blocks:</Text>
-          {texts.slice(1).map((text, index) => (  // Skip the first element which is the full text
-            <Text key={index} style={{fontSize: 14}}>
-              {text.description}
-            </Text>
-          ))}
-        </View>
-      )}
+        {scanType === 'package' && texts.length > 0 && (
+          <View>
+            <Text style={styles.textHeading}>Package Text:</Text>
+            {texts[0] && (  // The first element contains the full text
+              <Text style={styles.resultText}>{texts[0].description}</Text>
+            )}
+            <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 10}}>Text Blocks:</Text>
+            {texts.slice(1).map((text, index) => (  // Skip the first element which is the full text
+              <Text key={index} style={{fontSize: 14}}>
+                {text.description}
+              </Text>
+            ))}
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: "center", alignItems: "center" },
-    image: { width: 300, height: 300, marginBottom: 10, borderRadius: 10 },
+    container: { 
+      flex: 1, 
+      justifyContent: "center", 
+      alignItems: "center", 
+      backgroundColor: "#D4EDDA" 
+    },
+    image: {
+      width: 300,
+      height: 460,
+      marginBottom: 5,
+    },
     button: {
       backgroundColor: "#00C000",
       padding: 10,
       borderRadius: 8,
-      width: "100%",
+      width: "70%",
       alignItems: "center",
       marginVertical: 5,
     },
@@ -130,6 +142,24 @@ const styles = StyleSheet.create({
       color: "black",
       fontSize: 16,
       fontWeight: "bold",
+    },
+    textHeading:{
+      fontSize: 18,
+      fontWeight: "bold",
+      marginTop: 20,
+    },
+    resultText:{
+      fontSize: 16,
+      marginTop: 5,
+    },
+    resultTextBottom:{
+      marginBottom: 30,
+    },
+    scrollView: {
+      padding: 10,
+    },
+    scrollViewContainer: {
+      alignItems: "center",
     },
 });
 
