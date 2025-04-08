@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import { Picker } from "@react-native-picker/picker"; // Import Picker
 import { useRouter } from "expo-router";
 import { generateRecipe } from "../../utils/openaiServiceB"; // Import OpenAI function
 import ImageProcessing from "../../utils/ImageProcessing ";
+import { useLocalSearchParams } from 'expo-router';
 
 export default function RecipeInput() {
   const [ingredients, setIngredients] = useState("");
@@ -22,7 +23,20 @@ export default function RecipeInput() {
   const [cookingTime, setCookingTime] = useState("30 minutes"); // Default time
   const [complexity, setComplexity] = useState("Easy"); // Default complexity
 
+  const { selected } = useLocalSearchParams(); // comes as a JSON string
+
   const router = useRouter();
+
+  useEffect(() => {
+    if (selected) {
+      try {
+        const parsed = JSON.parse(selected);
+        setIngredients(parsed.join(', '));
+      } catch (e) {
+        console.error("Failed to parse selected ingredients");
+      }
+    }
+  }, [selected]);
 
   const validateIngredients = (text) => {
     const validPattern = /^[A-Za-z, ]*$/;
@@ -83,6 +97,7 @@ export default function RecipeInput() {
             placeholder="Please enter at least two ingredients. E.g. Chicken, Rice, Onion..."
             value={ingredients} //here
             onChangeText={validateIngredients}
+            multiline={true}
           />
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet,Image,TouchableOpacity,Text, ScrollView } from "react-native";
+import { View, StyleSheet,Image,TouchableOpacity,Text, ScrollView, Pressable } from "react-native";
 import { useSelector,useDispatch } from "react-redux";
 import { setLabels, setTexts } from "../../../redux/p-slices/imageProcessingSlice"
 import * as FileSystem from 'expo-file-system';
@@ -109,9 +109,35 @@ const analyzeImage = () => {
         <TouchableOpacity style={styles.button} onPress={()=>analyzeImageFunction(imageUri)}>
           <Text style={styles.buttonText}>Analyze Image</Text>
         </TouchableOpacity>
+
+        {scanType === 'ingredient' && labels.length > 0 && (
+        <View>
+          <Text style={styles.heading}>Select Ingredients:</Text>
+          {labels.map((label, index) => {
+            const isSelected = selectedLabels.includes(label.description);
+            return (
+              <Pressable
+                key={index}
+                onPress={() => toggleLabel(label.description)}
+                style={[
+                  styles.labelItem,
+                  isSelected && styles.labelItemSelected
+                ]}
+              >
+                <Text>
+                  {label.description} ({Math.round(label.score * 100)}%)
+                </Text>
+              </Pressable>
+            );
+          })}
+          <Pressable onPress={handleSubmit} style={styles.submitBtn}>
+            <Text style={styles.submitText}>Next</Text>
+          </Pressable>
+        </View>
+      )}
         
         {/* Display results based on scan type */}
-        {scanType === 'ingredient' && labels.length > 0 && (
+        {/* {scanType === 'ingredient' && labels.length > 0 && (
           <View>
             <Text style={styles.textHeading}>Ingredients Detected:</Text>
             {labels.map((label, index) => (
@@ -121,7 +147,7 @@ const analyzeImage = () => {
             ))}
             <View style={styles.resultTextBottom}></View>
           </View>
-        )}
+        )} */}
 
         {scanType === 'package' && texts.length > 0 && (
           <View>
@@ -155,7 +181,7 @@ const styles = StyleSheet.create({
       marginBottom: 5,
     },
     button: {
-      backgroundColor: "#00C000",
+      backgroundColor: "#4caf50",
       padding: 10,
       borderRadius: 8,
       width: "70%",
@@ -164,7 +190,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
       color: "black",
-      fontSize: 16,
+      fontSize: 17,
       fontWeight: "bold",
     },
     textHeading:{
@@ -185,6 +211,37 @@ const styles = StyleSheet.create({
     scrollViewContainer: {
       alignItems: "center",
     },
+
+    heading: { 
+      fontSize: 18,
+      fontWeight: 'bold', 
+      marginBottom: 10,
+      marginTop: 20, 
+    },
+    labelItem: {
+      padding: 8,
+      marginVertical: 4,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 6,
+      backgroundColor: '#f9f9f9',
+    },
+    labelItemSelected: {
+      backgroundColor: '#d0f0c0',
+      borderColor: '#4caf50',
+    },
+    submitBtn: {
+      backgroundColor: '#4caf50',
+      padding: 12,
+      marginTop: 16,
+      marginBottom:30,
+      borderRadius: 6,
+      alignItems: 'center',
+    },
+    submitText: {
+      color: '#fff',
+      fontWeight: 'bold',
+    }
 });
 
 export default analyzeImage;
