@@ -81,7 +81,7 @@ export default function RecipeInput() {
           <TextInput
             style={[styles.input, error ? styles.inputError : null]}
             placeholder="Please enter at least two ingredients. E.g. Chicken, Rice, Onion..."
-            value={ingredients}
+            value={ingredients} //here
             onChangeText={validateIngredients}
           />
           {error ? <Text style={styles.errorText}>{error}</Text> : null}

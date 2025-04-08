@@ -1,15 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, StyleSheet,Image,TouchableOpacity,Text, ScrollView } from "react-native";
 import { useSelector,useDispatch } from "react-redux";
 import { setLabels, setTexts } from "../../../redux/p-slices/imageProcessingSlice"
 import * as FileSystem from 'expo-file-system';
 import axios from "axios";
 import Constants from 'expo-constants';
+import { useRouter } from "expo-router";
 
 
 const analyzeImage = () => {
   const dispatch = useDispatch();
   const { imageUri, scanType, labels, texts } = useSelector((state) => state.imageProcessing);
+  const [selectedLabels, setSelectedLabels] = useState([]);
+  const router = useRouter();
+
+  
+  const toggleLabel = (label) => {
+    if (selectedLabels.includes(label)) {
+      setSelectedLabels(selectedLabels.filter(item => item !== label));
+    } else {
+      setSelectedLabels([...selectedLabels, label]);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (selectedLabels.length < 1) {
+      alert("Please select at least two ingredients.");
+      return;
+    }
+    // Navigate to recipeInput screen with ingredients
+    router.push({
+      pathname: '/screens/RecipeInput',
+      params: { selected: JSON.stringify(selectedLabels) }
+    });
+  };
 
   const analyzeImageFunction = async (uri) => {
     try{
