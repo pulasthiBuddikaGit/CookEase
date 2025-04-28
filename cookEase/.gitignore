@@ -39,6 +39,5 @@ app-example
 
 firebaseConfig.js
 google-services.json
-.env
 
 android

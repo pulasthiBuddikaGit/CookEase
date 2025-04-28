@@ -1,18 +1,10 @@
 // utils/openaiService.js
 import OpenAI from "openai";
-import { OPENAI_API_KEY } from "@env";  // Import API key from .env
-
-// Ensure the API key exists before proceeding
-if (!OPENAI_API_KEY) {
-  console.warn("⚠️ OpenAI API Key is missing! Please check your .env file.");
-}
-
-console.log("API Key Loaded:", OPENAI_API_KEY ? "✅ Yes" : "❌ No");
 
 // Initialize OpenAI API
 const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY, // Use the API key from .env
-  dangerouslyAllowBrowser: true
+    apiKey: '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',
+    dangerouslyAllowBrowser: true
 });
 
 // Function to generate diet plan
