@@ -27,6 +27,7 @@ export default function RecipeInput() {
 
   const router = useRouter();
 
+  //this overwrites instead of adding to previous input
   useEffect(() => {
     if (selected) {
       try {
