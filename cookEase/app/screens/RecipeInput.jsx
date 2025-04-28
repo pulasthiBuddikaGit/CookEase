@@ -105,9 +105,12 @@ export default function RecipeInput() {
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>
 
+        {/*Pulasthi */}
         <View style={{ marginLeft: 10 }}>
           <ImageProcessing />
         </View>
+        {/*Pulasthi */}
+        
       </View>
 
 
