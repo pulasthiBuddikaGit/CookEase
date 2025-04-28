@@ -27,6 +27,7 @@ export default function RecipeInput() {
 
   const router = useRouter();
 
+  //pulasthi
   //this overwrites instead of adding to previous input
   useEffect(() => {
     if (selected) {
@@ -38,6 +39,7 @@ export default function RecipeInput() {
       }
     }
   }, [selected]);
+  //pulasthi
 
   const validateIngredients = (text) => {
     const validPattern = /^[A-Za-z, ]*$/;
