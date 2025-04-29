@@ -81,19 +81,19 @@ export default function RecipeInput() {
     // Update Redux store with the manually entered ingredients
     // Only update Redux when we have valid text input
     if (validateInput(text)) { 
-        //Below code do like this: For example, if text is "Apple, Banana, Carrot", this creates ["Apple", "Banana", "Carrot"].
-        //why this is needed? Thee text input is a comma-separated string, but Redux needs an array.  
-                                        //without here this space after comma inputing commas manually isn't possible
-        const ingredientArray = text.split(", ").map(item => item.trim()).filter(item => item !== "");
-        //It prevents duplication: By clearing the ingredients first and then adding the new array
-        dispatch(clearIngredients());
-        // This is the critical line that ensures your manually entered ingredients are saved in Redux and will persist when navigating between screens.
-        dispatch(addIngredients(ingredientArray));
-        setError("");
-      }
-    };
+      //Below code do like this: For example, if text is "Apple, Banana, Carrot", this creates ["Apple", "Banana", "Carrot"].
+      //why this is needed? Thee text input is a comma-separated string, but Redux needs an array.  
+                                      //without here this space after comma inputing commas manually isn't possible
+      const ingredientArray = text.split(", ").map(item => item.trim()).filter(item => item !== "");
+      //It prevents duplication: By clearing the ingredients first and then adding the new array
+      dispatch(clearIngredients());
+      // This is the critical line that ensures your manually entered ingredients are saved in Redux and will persist when navigating between screens.
+      dispatch(addIngredients(ingredientArray));
+      setError("");
+    }
+  };
 
-      // Function to validate input text - only gives error, doesn't block input
+  // Function to validate input text - only gives error, doesn't block input
   const validateInput = (text) => {
     const validPattern = /^[A-Za-z ,]*$/;
     if (!validPattern.test(text)) {
