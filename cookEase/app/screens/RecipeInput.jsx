@@ -39,8 +39,6 @@ export default function RecipeInput() {
     }
   }, [selectedIngredients]);
 
-  
-
   //pulasthi
   // const validateIngredients = (text) => {
   //   const validPattern = /^[A-Za-z, ]*$/;
