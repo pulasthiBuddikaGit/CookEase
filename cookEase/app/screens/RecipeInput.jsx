@@ -52,13 +52,7 @@ export default function RecipeInput() {
   //   }
   // };
 
-  //     //Below code do like this: For example, if text is "Apple, Banana, Carrot", this creates ["Apple", "Banana", "Carrot"].
-  //     //why this is needed? Thee text input is a comma-separated string, but Redux needs an array.
-  //     const ingredientArray = text.split(",").map(item => item.trim()).filter(item => item !== "");
-  //     //It prevents duplication: By clearing the ingredients first and then adding the new array
-  //     dispatch(clearIngredients());
-  //     // This is the critical line that ensures your manually entered ingredients are saved in Redux and will persist when navigating between screens.
-  //     dispatch(addIngredients(ingredientArray)); // Add new ingredients to Redux
+
       
   //     setError("");
   //   } else {
