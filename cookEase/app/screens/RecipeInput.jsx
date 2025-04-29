@@ -39,7 +39,7 @@ export default function RecipeInput() {
   }, [selectedIngredients]);
 //pulasthi
 
-  //pulasthi
+//pulasthi
     // Separate validation and text change handlers
   const handleTextChange = (text) => {
       // Set the ingredients state directly without validation
@@ -59,9 +59,9 @@ export default function RecipeInput() {
       setError("");
     }
   };
-  //pulasthi
+//pulasthi
 
-  //pulasthi
+//pulasthi
   // Function to validate input text - only gives error, doesn't block input
   const validateInput = (text) => {
     const validPattern = /^[A-Za-z ,]*$/;
