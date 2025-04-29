@@ -21,7 +21,6 @@ export default function RecipeInput() {
   const selectedIngredients = useSelector((state) => state.imageProcessing.selectedIngredients); // Get selected ingredients from Redux store
 
   const [ingredients, setIngredients] = useState('');
-  // const [manualIngredients, setManualIngredients] = useState(""); // State for manual input
 
   const [recipe, setRecipe] = useState("");
   const [loading, setLoading] = useState(false);
