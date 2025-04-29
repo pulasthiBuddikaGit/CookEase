@@ -87,6 +87,7 @@ export default function RecipeInput() {
         const ingredientArray = text.split(", ").map(item => item.trim()).filter(item => item !== "");
         //It prevents duplication: By clearing the ingredients first and then adding the new array
         dispatch(clearIngredients());
+        // This is the critical line that ensures your manually entered ingredients are saved in Redux and will persist when navigating between screens.
         dispatch(addIngredients(ingredientArray));
         setError("");
       }
