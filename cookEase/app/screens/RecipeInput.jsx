@@ -28,8 +28,6 @@ export default function RecipeInput() {
   const [cookingTime, setCookingTime] = useState("30 minutes"); // Default time
   const [complexity, setComplexity] = useState("Easy"); // Default complexity
 
-  //const { selected } = useLocalSearchParams(); // comes as a JSON string
-
   const router = useRouter();
 
   //pulasthi
