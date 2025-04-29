@@ -52,6 +52,7 @@ export default function RecipeInput() {
   //   }
   // };
 
+  //pulasthi
     // Separate validation and text change handlers
   const handleTextChange = (text) => {
       // Set the ingredients state directly without validation
@@ -81,6 +82,7 @@ export default function RecipeInput() {
     }
     return true;
   };
+  //pulasthi
 
   const handleGenerateRecipe = async () => {
     if (!ingredients.trim() || ingredients.split(",").length < 2) {
