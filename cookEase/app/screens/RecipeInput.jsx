@@ -80,8 +80,10 @@ export default function RecipeInput() {
       
     // Update Redux store with the manually entered ingredients
     // Only update Redux when we have valid text input
-    if (validateInput(text)) {   
-                                          //without here this space after comma inputing commas manually isn't possible
+    if (validateInput(text)) { 
+        //Below code do like this: For example, if text is "Apple, Banana, Carrot", this creates ["Apple", "Banana", "Carrot"].
+        //why this is needed? Thee text input is a comma-separated string, but Redux needs an array.  
+                                        //without here this space after comma inputing commas manually isn't possible
         const ingredientArray = text.split(", ").map(item => item.trim()).filter(item => item !== "");
         dispatch(clearIngredients());
         dispatch(addIngredients(ingredientArray));
