@@ -16,6 +16,19 @@ const DietForm = () => {
   const [bmi, setBmi] = useState("");
   const [loading, setLoading] = useState(false);
   const [dietPlan, setDietPlan] = useState(null);
+  const [country, setCountry] = useState(""); // New state for country
+  const [countryValue, setCountryValue] = useState(""); // Value to pass to OpenAI
+  const [isCountryModalVisible, setIsCountryModalVisible] = useState(false);
+
+  const [errors, setErrors] = useState({
+    age: "",
+    gender: "",
+    height: "",
+    weight: "",
+    calories: "",
+    country: "",
+  });
+
 
   // Toggle selection of medical conditions
   const handleMedicalConditionChange = (condition) => {
@@ -57,11 +70,24 @@ const DietForm = () => {
     calculateBMI(height, value);
   };
 
+  const validateForm = () => {
+    const errorMessages = {};
+    
+    if (!age) errorMessages.age = "Age is required";
+    if (!gender) errorMessages.gender = "Gender is required";
+    if (!height) errorMessages.height = "Height is required";
+    if (!weight) errorMessages.weight = "Weight is required";
+    if (!calories) errorMessages.calories = "Calories per day is required";
+    if (!country) errorMessages.country = "Country is required";
+
+    setErrors(errorMessages);
+    return Object.keys(errorMessages).length === 0; // Return true if no errors
+  };
   // Generate diet plan function
   const handleGenerateDietPlan = async () => {
     // Validate inputs
-    if (!age || !gender || !height || !weight || !calories) {
-      Alert.alert("Error", "Please fill in all fields");
+    if (!validateForm()) {
+      Alert.alert("Error", "Please fill in all fields correctly.");
       return;
     }
 
@@ -76,6 +102,7 @@ const DietForm = () => {
         weight,
         bmi,
         calories,
+        country: countryValue,
         selectedConditions
       });
 
@@ -111,6 +138,8 @@ const DietForm = () => {
       <View style={styles.container}>
         <Text style={styles.label}>Age:</Text>
         <TextInput style={styles.input} keyboardType="numeric" value={age} onChangeText={(text) =>{if (/^\d{0,4}$/.test(text)){setAge(text);}}} maxLength={2} />
+        {errors.age && <Text style={styles.errorText}>{errors.age}</Text>}
+
 
         <Text style={styles.label}>Gender:</Text>
         <TouchableOpacity onPress={toggleGenderModal} style={styles.medicalConditionB}>
@@ -126,6 +155,7 @@ const DietForm = () => {
             )}
           </View>
         </TouchableOpacity>
+        {errors.gender && <Text style={styles.errorText}>{errors.gender}</Text>}
 
         {/* Modal for Gender Selection */}
         <Modal
@@ -149,9 +179,13 @@ const DietForm = () => {
 
         <Text style={styles.label}>Height (cm):</Text>
         <TextInput style={styles.input} keyboardType="numeric" value={height} onChangeText={(text) =>{if (/^\d{0,4}$/.test(text)){handleHeightChange(text);}}} maxLength={3} />
+        {errors.height && <Text style={styles.errorText}>{errors.height}</Text>}
+
 
         <Text style={styles.label}>Weight (kg):</Text>
         <TextInput style={styles.input} keyboardType="numeric" value={weight} onChangeText={(text) =>{if (/^\d{0,4}$/.test(text)){handleWeightChange(text);}}} maxLength={3} />
+        {errors.weight && <Text style={styles.errorText}>{errors.weight}</Text>}
+
 
         {/* BMI Calculation */}
         <Text style={styles.label}>BMI:</Text>
@@ -159,6 +193,53 @@ const DietForm = () => {
 
         <Text style={styles.label}>Expected Calories Per Day (Kcal):</Text>
         <TextInput style={styles.input} keyboardType="numeric" value={calories} onChangeText={(text) =>{if (/^\d{0,4}$/.test(text)){setCalories(text);}}} maxLength={4} />
+        {errors.calories && <Text style={styles.errorText}>{errors.calories}</Text>}
+
+
+        <Text style={styles.label}>Country:</Text>
+          <TouchableOpacity onPress={() => setIsCountryModalVisible(true)} style={styles.medicalConditionB}>
+            <View style={styles.medicalConditionsBox}>
+              <Text style={styles.selectedConditionsText}>
+                {country ? country : "Select a country"}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          {errors.country && <Text style={styles.errorText}>{errors.country}</Text>}
+
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isCountryModalVisible}
+            onRequestClose={() => setIsCountryModalVisible(false)}
+          >
+            <View style={styles.modalBackground}>
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalTitle}>Select Your Country</Text>
+
+                {[
+                  { label: "Sri Lanka", value: "sri_lanka" },
+                  { label: "India", value: "india" },
+                  { label: "USA", value: "usa" },
+                  { label: "UK", value: "uk" },
+                  { label: "Canada", value: "canada" },
+                  { label: "Australia", value: "australia" },
+                ].map((item) => (
+                  <TouchableOpacity 
+                    key={item.value} 
+                    onPress={() => { 
+                      setCountry(item.label); 
+                      setCountryValue(item.value); 
+                      setIsCountryModalVisible(false); 
+                    }} 
+                    style={styles.genderButton}
+                  >
+                    <Text style={styles.genderButtonText}>{item.label}</Text>
+                  </TouchableOpacity>
+                ))}
+                
+              </View>
+            </View>
+          </Modal>
 
         {/* Show selected conditions after selecting */}
         <Text style={styles.label}>
@@ -245,152 +326,40 @@ const DietForm = () => {
 
 // Styles remain the same
 const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-    backgroundColor: '#f9fffb',
-  },
-  container: {
-    padding: 20,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    marginTop: 20,
-    margin: 10,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 8,
-    color: "#333",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 12,
-    marginBottom: 15,
-    borderRadius: 8,
-    backgroundColor: "#f9f9f9",
-    fontSize: 16,
-    color: "#333",
-  },
-  inputPicker: {
-    borderWidth: 1,
-    borderColor: "black",
-    padding: 12,
-    marginBottom: 15,
-    borderRadius: 8,
-    backgroundColor: "#f9f9f9",
-    fontSize: 16,
-    color: "#333",
-  },
+  errorText: {color: 'red',fontSize: 12,marginBottom: 10,},
+  scrollContainer: {flexGrow: 1,backgroundColor: '#f9fffb',},
+  container: {padding: 20,backgroundColor: '#fff',borderRadius: 10,marginTop: 20,margin: 10,marginBottom: 20,
+    shadowColor: "#000",shadowOffset: { width: 0, height: 2 },shadowOpacity: 0.1,shadowRadius: 5,elevation: 3,},
+  label: {fontSize: 16,fontWeight: "bold",marginBottom: 8,color: "#333",},
+  input: {borderWidth: 1,borderColor: "#ddd",padding: 12,marginBottom: 15,borderRadius: 8,backgroundColor: "#f9f9f9",fontSize: 16,color: "#333",},
+  inputPicker: {borderWidth: 1,borderColor: "black",padding: 12,marginBottom: 15,borderRadius: 8,backgroundColor: "#f9f9f9",fontSize: 16,color: "#333",},
 
   //gender modal styles
-  genderButton: {
-    padding: 10,
-    backgroundColor: "#00796b",
-    marginBottom: 10,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  genderButtonText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#fff",
-  },
+  genderButton: {padding: 10,backgroundColor: "#00796b",marginBottom: 10,borderRadius: 8,alignItems: "center",},
+  genderButtonText: {fontSize: 18,fontWeight: "bold",color: "#fff",},
 
   //checkbox styles
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-    paddingLeft: 10,
-  },
-  checkboxText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContainer: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    width: 300,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 15,
-    color: "#000000",
-  },
-  buttonContainer: {
-    marginTop: 20,
-    alignItems: "center",
-  },
+  checkboxContainer: {flexDirection: "row",alignItems: "center",marginBottom: 8,paddingLeft: 10,},
+  checkboxText: {fontSize: 16,color: "#333",},
+  modalBackground: {flex: 1,justifyContent: "center",alignItems: "center",backgroundColor: "rgba(0, 0, 0, 0.5)",},
+  modalContainer: {backgroundColor: "white",padding: 20,borderRadius: 10,width: 300,},
+  modalTitle: {fontSize: 18,fontWeight: "bold",marginBottom: 15,color: "#000000",},
+  buttonContainer: {marginTop: 20,alignItems: "center",},
   
   //medical conditions styles
-  medicalConditionB: {
-    marginBottom: 20,
-    paddingVertical: -18,
-    marginTop: -20,
-  },
-  medicalConditionsBox: {
-    marginTop: 20,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    backgroundColor: "#f2f2f2",
-    borderRadius: 8,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "flex-start",
-  },
-  selectedConditionsText: {
-    fontSize: 16,
-    color: "black",
-    marginBottom: 15,
-    flexWrap: "wrap",
-  },
+  medicalConditionB: {marginBottom: 20,paddingVertical: -18,marginTop: -20,},
+  medicalConditionsBox: {marginTop: 20,padding: 10,borderWidth: 1,borderColor: "#ddd",backgroundColor: "#f2f2f2",
+    borderRadius: 8,flexDirection: "row",flexWrap: "wrap",justifyContent: "flex-start",},
+  selectedConditionsText: {fontSize: 16,color: "black",marginBottom: 15,flexWrap: "wrap",},
 
   //generate button styles
-  generateButton: {
-    backgroundColor: "#d4edda",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 8,
-    marginTop: 20,
-  },
-  generateButtonText: {
-    color: "#000000",
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
+  generateButton: {backgroundColor: "#d4edda",paddingVertical: 12,paddingHorizontal: 25,borderRadius: 8,marginTop: 20,},
+  generateButtonText: {color: "#000000",fontSize: 18,fontWeight: "bold",textAlign: "center",},
 
   //result styles
-  resultContainer: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: "#f1f1f1",
-    borderRadius: 10,
-  },
-  resultTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  resultText: {
-    fontSize: 16,
-  },
+  resultContainer: {marginTop: 20,padding: 15,backgroundColor: "#f1f1f1",borderRadius: 10,},
+  resultTitle: {fontSize: 18,fontWeight: "bold",marginBottom: 10,},
+  resultText: {fontSize: 16,},
 });
   
 export default DietForm;
