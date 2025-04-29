@@ -78,7 +78,8 @@ export default function RecipeInput() {
       // Set the ingredients state directly without validation
       setIngredients(text);
       
-      // Only update Redux when we have valid text input
+    // Update Redux store with the manually entered ingredients
+    // Only update Redux when we have valid text input
     if (validateInput(text)) {   
                                           //without here this space after comma inputing commas manually isn't possible
         const ingredientArray = text.split(", ").map(item => item.trim()).filter(item => item !== "");
