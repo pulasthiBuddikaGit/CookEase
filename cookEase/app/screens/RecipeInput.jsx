@@ -72,7 +72,9 @@ export default function RecipeInput() {
       setError("");
     }
   };
+  //pulasthi
 
+  //pulasthi
   // Function to validate input text - only gives error, doesn't block input
   const validateInput = (text) => {
     const validPattern = /^[A-Za-z ,]*$/;
@@ -132,7 +134,7 @@ export default function RecipeInput() {
             style={[styles.input, error ? styles.inputError : null]}
             placeholder="Please enter at least two ingredients. E.g. Chicken, Rice, Onion..."
             value={ingredients} //here
-            onChangeText={handleTextChange}
+            onChangeText={handleTextChange} //changed
             multiline={true}
           />
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
