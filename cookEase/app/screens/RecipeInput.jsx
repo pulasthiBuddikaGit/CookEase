@@ -52,13 +52,6 @@ export default function RecipeInput() {
   //   }
   // };
 
-  // Function to validate and update ingredients
-  // const validateIngredients = (text) => {
-  //   const validPattern = /^[A-Za-z ,]*$/;
-  //   if (validPattern.test(text)) {
-  //     setIngredients(text);
-  //     // Update Redux store with the manually entered ingredients
-
   //     //Below code do like this: For example, if text is "Apple, Banana, Carrot", this creates ["Apple", "Banana", "Carrot"].
   //     //why this is needed? Thee text input is a comma-separated string, but Redux needs an array.
   //     const ingredientArray = text.split(",").map(item => item.trim()).filter(item => item !== "");
