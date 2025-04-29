@@ -30,27 +30,14 @@ export default function RecipeInput() {
 
   const router = useRouter();
 
-  //pulasthi
-
+//pulasthi
   // Update ingredients state when selectedIngredients in Redux changes
   useEffect(() => {
     if (selectedIngredients.length > 0) {
       setIngredients(selectedIngredients.join());
     }
   }, [selectedIngredients]);
-
-  //pulasthi
-
-  //old validateIngredients function
-  // const validateIngredients = (text) => {
-  //   const validPattern = /^[A-Za-z, ]*$/;
-  //   if (validPattern.test(text)) {
-  //     setIngredients(text);
-  //     setError("");
-  //   } else {
-  //     setError("Only letters and commas are allowed.");
-  //   }
-  // };
+//pulasthi
 
   //pulasthi
     // Separate validation and text change handlers
