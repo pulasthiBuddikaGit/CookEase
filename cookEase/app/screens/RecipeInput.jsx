@@ -71,7 +71,7 @@ export default function RecipeInput() {
     }
     return true;
   };
-  //pulasthi
+//pulasthi
 
   const handleGenerateRecipe = async () => {
     if (!ingredients.trim() || ingredients.split(",").length < 2) {
