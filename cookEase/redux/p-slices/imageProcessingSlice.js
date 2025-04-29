@@ -6,6 +6,7 @@ const initialState = {
   texts: [],
   scanType: null, // 'package' or 'ingredient'
   popupVisible: false,
+  selectedIngredients: []
 };
 
 const imageProcessingSlice = createSlice({
@@ -30,6 +31,12 @@ const imageProcessingSlice = createSlice({
     resetImageProcessing: (state) => {
       return initialState;
     },
+    addIngredients(state, action) {
+      state.selectedIngredients = [...state.selectedIngredients, ...action.payload];
+    },
+    clearIngredients(state) {
+      state.selectedIngredients = [];
+    }
   },
 });
 
@@ -40,6 +47,8 @@ export const {
   setScanType,
   setPopupVisible,
   resetImageProcessing,
+  addIngredients, 
+  clearIngredients
 } = imageProcessingSlice.actions;
 
 export default imageProcessingSlice.reducer;

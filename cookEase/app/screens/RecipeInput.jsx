@@ -13,42 +13,105 @@ import { Picker } from "@react-native-picker/picker"; // Import Picker
 import { useRouter } from "expo-router";
 import { generateRecipe } from "../../utils/openaiServiceB"; // Import OpenAI function
 import ImageProcessing from "../../utils/ImageProcessing ";
-import { useLocalSearchParams } from 'expo-router';
+//import { useLocalSearchParams } from 'expo-router';
+import { useSelector, useDispatch } from 'react-redux';
+import { addIngredients, clearIngredients } from "../../redux/p-slices/imageProcessingSlice";
 
 export default function RecipeInput() {
-  const [ingredients, setIngredients] = useState("");
+  const dispatch = useDispatch();
+  const selectedIngredients = useSelector((state) => state.imageProcessing.selectedIngredients); // Get selected ingredients from Redux store
+
+  //const [ingredients, setIngredients] = useState(selectedIngredients.join(", ")); // Initialize with selected ingredients from Redux store;
+  const [ingredients, setIngredients] = useState('');
+  // const [manualIngredients, setManualIngredients] = useState(""); // State for manual input
+
   const [recipe, setRecipe] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [cookingTime, setCookingTime] = useState("30 minutes"); // Default time
   const [complexity, setComplexity] = useState("Easy"); // Default complexity
 
-  const { selected } = useLocalSearchParams(); // comes as a JSON string
+  //const { selected } = useLocalSearchParams(); // comes as a JSON string
 
   const router = useRouter();
 
   //pulasthi
   //this overwrites instead of adding to previous input
-  useEffect(() => {
-    if (selected) {
-      try {
-        const parsed = JSON.parse(selected);
-        setIngredients(parsed.join(', '));
-      } catch (e) {
-        console.error("Failed to parse selected ingredients");
-      }
-    }
-  }, [selected]);
-  //pulasthi
+  // useEffect(() => {
+  //   if (selected) {
+  //     try {
+  //       const parsed = JSON.parse(selected);
+  //       setIngredients(parsed.join(', '));
+  //     } catch (e) {
+  //       console.error("Failed to parse selected ingredients");
+  //     }
+  //   }
+  // }, [selected]);
 
-  const validateIngredients = (text) => {
-    const validPattern = /^[A-Za-z, ]*$/;
-    if (validPattern.test(text)) {
-      setIngredients(text);
-      setError("");
-    } else {
-      setError("Only letters and commas are allowed.");
+  // Update ingredients state when selectedIngredients in Redux changes
+  useEffect(() => {
+    if (selectedIngredients.length > 0) {
+      setIngredients(selectedIngredients.join());
     }
+  }, [selectedIngredients]);
+
+  
+
+  //pulasthi
+  // const validateIngredients = (text) => {
+  //   const validPattern = /^[A-Za-z, ]*$/;
+  //   if (validPattern.test(text)) {
+  //     setIngredients(text);
+  //     setError("");
+  //   } else {
+  //     setError("Only letters and commas are allowed.");
+  //   }
+  // };
+
+  // Function to validate and update ingredients
+  // const validateIngredients = (text) => {
+  //   const validPattern = /^[A-Za-z ,]*$/;
+  //   if (validPattern.test(text)) {
+  //     setIngredients(text);
+  //     // Update Redux store with the manually entered ingredients
+
+  //     //Below code do like this: For example, if text is "Apple, Banana, Carrot", this creates ["Apple", "Banana", "Carrot"].
+  //     //why this is needed? Thee text input is a comma-separated string, but Redux needs an array.
+  //     const ingredientArray = text.split(",").map(item => item.trim()).filter(item => item !== "");
+  //     //It prevents duplication: By clearing the ingredients first and then adding the new array
+  //     dispatch(clearIngredients());
+  //     // This is the critical line that ensures your manually entered ingredients are saved in Redux and will persist when navigating between screens.
+  //     dispatch(addIngredients(ingredientArray)); // Add new ingredients to Redux
+      
+  //     setError("");
+  //   } else {
+  //     setError("Only letters and commas are allowed.");
+  //   }
+  // };
+
+    // Separate validation and text change handlers
+  const handleTextChange = (text) => {
+      // Set the ingredients state directly without validation
+      setIngredients(text);
+      
+      // Only update Redux when we have valid text input
+    if (validateInput(text)) {   
+                                          //without here this space after comma inputing commas manually isn't possible
+        const ingredientArray = text.split(", ").map(item => item.trim()).filter(item => item !== "");
+        dispatch(clearIngredients());
+        dispatch(addIngredients(ingredientArray));
+        setError("");
+      }
+    };
+
+      // Function to validate input text - only gives error, doesn't block input
+  const validateInput = (text) => {
+    const validPattern = /^[A-Za-z ,]*$/;
+    if (!validPattern.test(text)) {
+      setError("Only letters, commas, and spaces are allowed.");
+      return false;
+    }
+    return true;
   };
 
   const handleGenerateRecipe = async () => {
@@ -99,7 +162,7 @@ export default function RecipeInput() {
             style={[styles.input, error ? styles.inputError : null]}
             placeholder="Please enter at least two ingredients. E.g. Chicken, Rice, Onion..."
             value={ingredients} //here
-            onChangeText={validateIngredients}
+            onChangeText={handleTextChange}
             multiline={true}
           />
           {error ? <Text style={styles.errorText}>{error}</Text> : null}

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, StyleSheet,Image,TouchableOpacity,Text, ScrollView, Pressable } from "react-native";
 import { useSelector,useDispatch } from "react-redux";
-import { setLabels, setTexts } from "../../../redux/p-slices/imageProcessingSlice"
+import { addIngredients, setLabels, setTexts } from "../../../redux/p-slices/imageProcessingSlice"
 import * as FileSystem from 'expo-file-system';
 import axios from "axios";
 import Constants from 'expo-constants';
@@ -13,7 +13,6 @@ const analyzeImage = () => {
   const { imageUri, scanType, labels, texts } = useSelector((state) => state.imageProcessing);
   const [selectedLabels, setSelectedLabels] = useState([]);
   const router = useRouter();
-
   
   const toggleLabel = (label) => {
     if (selectedLabels.includes(label)) {
@@ -29,10 +28,10 @@ const analyzeImage = () => {
       return;
     }
     // Navigate to recipeInput screen with ingredients
-    router.push({
-      pathname: '/screens/RecipeInput',
-      params: { selected: JSON.stringify(selectedLabels) }
-    });
+    // Add selected ingredients to redux store
+    dispatch(addIngredients(selectedLabels));
+    router.push('/screens/RecipeInput');
+    
   };
 
   const analyzeImageFunction = async (uri) => {
