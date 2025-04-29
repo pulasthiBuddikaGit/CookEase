@@ -13,7 +13,6 @@ import { Picker } from "@react-native-picker/picker"; // Import Picker
 import { useRouter } from "expo-router";
 import { generateRecipe } from "../../utils/openaiServiceB"; // Import OpenAI function
 import ImageProcessing from "../../utils/ImageProcessing ";
-//import { useLocalSearchParams } from 'expo-router';
 import { useSelector, useDispatch } from 'react-redux';
 import { addIngredients, clearIngredients } from "../../redux/p-slices/imageProcessingSlice";
 
