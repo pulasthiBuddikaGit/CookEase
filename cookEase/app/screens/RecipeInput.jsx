@@ -31,17 +31,6 @@ export default function RecipeInput() {
   const router = useRouter();
 
   //pulasthi
-  //this overwrites instead of adding to previous input
-  // useEffect(() => {
-  //   if (selected) {
-  //     try {
-  //       const parsed = JSON.parse(selected);
-  //       setIngredients(parsed.join(', '));
-  //     } catch (e) {
-  //       console.error("Failed to parse selected ingredients");
-  //     }
-  //   }
-  // }, [selected]);
 
   // Update ingredients state when selectedIngredients in Redux changes
   useEffect(() => {
