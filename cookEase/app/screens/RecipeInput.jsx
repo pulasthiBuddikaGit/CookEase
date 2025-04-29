@@ -52,14 +52,6 @@ export default function RecipeInput() {
   //   }
   // };
 
-
-      
-  //     setError("");
-  //   } else {
-  //     setError("Only letters and commas are allowed.");
-  //   }
-  // };
-
     // Separate validation and text change handlers
   const handleTextChange = (text) => {
       // Set the ingredients state directly without validation
