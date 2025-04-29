@@ -85,6 +85,7 @@ export default function RecipeInput() {
         //why this is needed? Thee text input is a comma-separated string, but Redux needs an array.  
                                         //without here this space after comma inputing commas manually isn't possible
         const ingredientArray = text.split(", ").map(item => item.trim()).filter(item => item !== "");
+        //It prevents duplication: By clearing the ingredients first and then adding the new array
         dispatch(clearIngredients());
         dispatch(addIngredients(ingredientArray));
         setError("");
