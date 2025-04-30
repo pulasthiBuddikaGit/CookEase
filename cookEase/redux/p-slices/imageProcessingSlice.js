@@ -19,6 +19,9 @@ const imageProcessingSlice = createSlice({
     setLabels: (state, action) => {
       state.labels = action.payload;
     },
+    clearLabels: (state) => {
+      state.labels = [];
+    },
     setTexts: (state, action) => {
       state.texts = action.payload;
     },
@@ -43,6 +46,7 @@ const imageProcessingSlice = createSlice({
 export const {
   setImageUri,
   setLabels,
+  clearLabels,
   setTexts,
   setScanType,
   setPopupVisible,
