@@ -32,7 +32,7 @@ const analyzeImage = () => {
     dispatch(addIngredients(selectedLabels));
     router.push('/screens/RecipeInput');
     
-    
+    // Clear labels after submission
     dispatch(clearLabels());
   };
 
