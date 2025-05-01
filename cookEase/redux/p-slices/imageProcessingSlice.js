@@ -51,11 +51,12 @@ export const {
   setLabels,
   clearLabels,
   setTexts,
+  clearTexts,
   setScanType,
   setPopupVisible,
   resetImageProcessing,
   addIngredients, 
-  clearIngredients
+  clearIngredients,
 } = imageProcessingSlice.actions;
 
 export default imageProcessingSlice.reducer;
