@@ -12,6 +12,8 @@ const analyzeImage = () => {
   const dispatch = useDispatch();
   const { imageUri, scanType, labels, texts } = useSelector((state) => state.imageProcessing);
   const [selectedLabels, setSelectedLabels] = useState([]);
+  const [selectedTexts, setSelectedTexts] = useState([]);
+
   const router = useRouter();
   
   const toggleLabel = (label) => {
