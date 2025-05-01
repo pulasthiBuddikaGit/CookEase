@@ -57,7 +57,7 @@ const analyzeImage = () => {
     router.push('/screens/RecipeInput');
     
     // Clear texts after submission
-
+    
   };
 
   const analyzeImageFunction = async (uri) => {
@@ -161,8 +161,41 @@ const analyzeImage = () => {
         </View>
       )}
 
+      {scanType === 'package' && texts.length > 0 && (
+        <View>
+          <View style={styles.packageTextContainer}>
+            <Text style={styles.selectTextHeading}>Package Text:</Text>
+            {texts[0] && (
+              <Text style={styles.packageText}>{texts[0].description}</Text>
+            )}
+          </View>
 
+          <Text style={styles.selectTextBlockHeading}>Tap to Select Text Blocks:</Text>
+          <View style={styles.textBlocksContainer}>
+            {texts.slice(1).map((text, index) => {
+              const isSelected = selectedTexts.includes(text.description);
+              return (
+                <Pressable
+                  key={index}
+                  onPress={() => toggleText(text.description)}
+                  style={[
+                    styles.textItem,
+                    isSelected && styles.textItemSelected
+                  ]}
+                >
+                  <Text numberOfLines={1} style={styles.textLabel}>
+                    {text.description}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
 
+          <Pressable onPress={handlePackageSubmit} style={styles.submitPackageBtn}>
+            <Text style={styles.submitText}>Next</Text>
+          </Pressable>
+        </View>
+      )}
       </ScrollView>
     </View>
   );
@@ -243,18 +276,91 @@ const styles = StyleSheet.create({
     // textItemSelected: {
     //   backgroundColor: '#add8e6', // Light blue for selected
     // },
-    // submitBtn: {
-    //   backgroundColor: '#4caf50',
-    //   padding: 12,
-    //   marginTop: 16,
-    //   marginBottom:30,
-    //   borderRadius: 6,
-    //   alignItems: 'center',
-    // },
-    // submitText: {
-    //   color: '#fff',
-    //   fontWeight: 'bold',
-    // }
+    submitBtn: {
+      backgroundColor: '#4caf50',
+      padding: 12,
+      marginTop: 16,
+      marginBottom:30,
+      borderRadius: 6,
+      alignItems: 'center',
+    },
+    submitText: {
+      color: '#fff',
+      fontWeight: 'bold',
+    },
+
+    selectTextBlockHeading: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginTop: 10,
+      marginBottom: 10,
+    },
+    
+    textBlocksContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'flex-start',
+      marginBottom: 20,
+    },
+    
+    textItem: {
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+      margin: 6,
+      backgroundColor: '#eee',
+      borderRadius: 8,
+      maxWidth: '45%',
+      flexGrow: 1,
+      flexShrink: 1,
+      alignSelf: 'flex-start',
+      borderWidth: 1,
+      borderColor: '#ccc',
+    },
+    
+    textItemSelected: {
+      backgroundColor: '#b3e5fc', // Light blue
+      borderColor: '#0288d1',     // Darker border when selected
+    },
+    
+    textLabel: {
+      fontSize: 14,
+      color: '#333',
+    },
+
+    submitPackageBtn: {
+      backgroundColor: '#4caf50',
+      padding: 12,
+      marginTop: 1,
+      marginBottom: 30,
+      borderRadius: 6,
+      alignItems: 'center',
+      alignSelf: 'center',
+      width: '70%',
+    },
+
+    packageTextContainer: {
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      marginBottom: 8,
+    },
+
+    packageText: {
+      fontSize: 16,
+      textAlign: 'center',
+      color: '#333',
+      marginTop: 5,
+      maxWidth: 300,
+    },
+    
+    selectTextHeading: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      textAlign: 'left',
+      paddingTop: 10,
+      paddingBottom: 1,
+      color: '#000',
+    },    
+    
 });
 
 export default analyzeImage;
