@@ -46,6 +46,19 @@ const analyzeImage = () => {
     dispatch(clearLabels());
   };  
 
+  const handlePackageSubmit = () => {
+    if (selectedTexts.length < 1) {
+      alert("Please select at least two ingredients.");
+      return;
+    }
+    // Navigate to recipeInput screen with ingredients
+    // Add selected ingredients to redux store
+    dispatch(addIngredients(selectedLabels));
+    router.push('/screens/RecipeInput');
+    
+    // Clear labels after submission
+    dispatch(clearLabels());
+  };
 
   const analyzeImageFunction = async (uri) => {
     try{
