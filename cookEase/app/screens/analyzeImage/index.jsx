@@ -53,7 +53,7 @@ const analyzeImage = () => {
     }
     // Navigate to recipeInput screen with ingredients
     // Add selected ingredients to redux store
-    dispatch(addIngredients(selectedLabels));
+    dispatch(addIngredients(selectedTexts));
     router.push('/screens/RecipeInput');
     
     // Clear labels after submission
@@ -184,6 +184,7 @@ const analyzeImage = () => {
                   </Pressable>
                 );
               })}
+              
             </View>
 
           </View>
