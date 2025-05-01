@@ -196,6 +196,7 @@ const analyzeImage = () => {
           </Pressable>
         </View>
       )}
+
       </ScrollView>
     </View>
   );
@@ -226,15 +227,7 @@ const styles = StyleSheet.create({
       fontSize: 17,
       fontWeight: "bold",
     },
-    // textHeading:{
-    //   fontSize: 18,
-    //   fontWeight: "bold",
-    //   marginTop: 20,
-    // },
-    // resultText:{
-    //   fontSize: 16,
-    //   marginTop: 5,
-    // },
+
     resultTextBottom:{
       marginBottom: 30,
     },
@@ -263,19 +256,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#d0f0c0',
       borderColor: '#4caf50',
     },
-    // textItem: {
-    //   padding: 8,
-    //   margin: 4,
-    //   backgroundColor: '#eee',
-    //   borderRadius: 10,
-      // marginBottom: 10,
-      // maxWidth: '45%',        // ← Prevents wide items from stretching the row
-      // flexGrow: 1,            // ← Allows them to expand nicely
-      // flexShrink: 1,          // ← Shrinks if space is tight
-    // },
-    // textItemSelected: {
-    //   backgroundColor: '#add8e6', // Light blue for selected
-    // },
+
     submitBtn: {
       backgroundColor: '#4caf50',
       padding: 12,
@@ -340,7 +321,7 @@ const styles = StyleSheet.create({
 
     packageTextContainer: {
       alignItems: 'center',
-      paddingHorizontal: 16,
+      paddingHorizontal: 5,
       marginBottom: 8,
     },
 
@@ -359,6 +340,7 @@ const styles = StyleSheet.create({
       paddingTop: 10,
       paddingBottom: 1,
       color: '#000',
+      width: '100%'  //why I make this child element full width?so it can respect textAlign: 'left'.
     },    
     
 });
