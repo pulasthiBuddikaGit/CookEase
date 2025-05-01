@@ -136,19 +136,6 @@ const analyzeImage = () => {
           </Pressable>
         </View>
       )}
-        
-        {/* Display results based on scan type */}
-        {/* {scanType === 'ingredient' && labels.length > 0 && (
-          <View>
-            <Text style={styles.textHeading}>Ingredients Detected:</Text>
-            {labels.map((label, index) => (
-              <Text key={index} style={styles.resultText}>
-                {label.description} ({Math.round(label.score * 100)}%)
-              </Text>
-            ))}
-            <View style={styles.resultTextBottom}></View>
-          </View>
-        )} */}
 
         {scanType === 'package' && texts.length > 0 && (
           <View>
