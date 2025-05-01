@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, StyleSheet,Image,TouchableOpacity,Text, ScrollView, Pressable } from "react-native";
 import { useSelector,useDispatch } from "react-redux";
-import { addIngredients, setLabels, setTexts, clearLabels } from "../../../redux/p-slices/imageProcessingSlice"
+import { addIngredients, setLabels, setTexts, clearLabels, clearTexts } from "../../../redux/p-slices/imageProcessingSlice"
 import * as FileSystem from 'expo-file-system';
 import axios from "axios";
 import Constants from 'expo-constants';
@@ -57,7 +57,7 @@ const analyzeImage = () => {
     router.push('/screens/RecipeInput');
     
     // Clear texts after submission
-    
+    dispatch(clearTexts());
   };
 
   const analyzeImageFunction = async (uri) => {
