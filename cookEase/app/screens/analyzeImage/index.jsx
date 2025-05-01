@@ -44,7 +44,8 @@ const analyzeImage = () => {
     
     // Clear labels after submission
     dispatch(clearLabels());
-  };
+  };  
+
 
   const analyzeImageFunction = async (uri) => {
     try{
@@ -153,12 +154,25 @@ const analyzeImage = () => {
             {texts[0] && (  // The first element contains the full text
               <Text style={styles.resultText}>{texts[0].description}</Text>
             )}
-            <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 10}}>Text Blocks:</Text>
-            {texts.slice(1).map((text, index) => (  // Skip the first element which is the full text
-              <Text key={index} style={{fontSize: 14}}>
-                {text.description}
-              </Text>
-            ))}
+            <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 10}}>Tap to Select Text Blocks:</Text>
+            <View style={{ flexWrap: 'wrap', flexDirection: 'row' }}>
+              {texts.slice(1).map((text, index) => {
+                const isSelected = selectedTexts.includes(text.description);
+                return (
+                  <Pressable
+                    key={index}
+                    onPress={() => toggleText(text.description)}
+                    style={[
+                      styles.textItem,
+                      isSelected && styles.textItemSelected
+                    ]}
+                  >
+                    <Text>{text.description}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
           </View>
         )}
       </ScrollView>
@@ -228,6 +242,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#d0f0c0',
       borderColor: '#4caf50',
     },
+
     submitBtn: {
       backgroundColor: '#4caf50',
       padding: 12,
