@@ -184,7 +184,9 @@ const analyzeImage = () => {
                   </Pressable>
                 );
               })}
-              
+              <Pressable onPress={handlePackageSubmit} style={styles.submitBtn}>
+                <Text style={styles.submitText}>Next</Text>
+              </Pressable>
             </View>
 
           </View>
