@@ -242,7 +242,15 @@ const styles = StyleSheet.create({
       backgroundColor: '#d0f0c0',
       borderColor: '#4caf50',
     },
-
+    textItem: {
+      padding: 8,
+      margin: 4,
+      backgroundColor: '#eee',
+      borderRadius: 10,
+    },
+    textItemSelected: {
+      backgroundColor: '#add8e6', // Light blue for selected
+    },
     submitBtn: {
       backgroundColor: '#4caf50',
       padding: 12,
