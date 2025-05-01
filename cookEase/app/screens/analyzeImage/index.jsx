@@ -161,36 +161,8 @@ const analyzeImage = () => {
         </View>
       )}
 
-        {scanType === 'package' && texts.length > 0 && (
-          <View>
-            <Text style={styles.textHeading}>Package Text:</Text>
-            {texts[0] && (  // The first element contains the full text
-              <Text style={styles.resultText}>{texts[0].description}</Text>
-            )}
-            <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 10}}>Tap to Select Text Blocks:</Text>
-            <View style={{ flexWrap: 'wrap', flexDirection: 'row' }}>
-              {texts.slice(1).map((text, index) => {
-                const isSelected = selectedTexts.includes(text.description);
-                return (
-                  <Pressable
-                    key={index}
-                    onPress={() => toggleText(text.description)}
-                    style={[
-                      styles.textItem,
-                      isSelected && styles.textItemSelected
-                    ]}
-                  >
-                    <Text>{text.description}</Text>
-                  </Pressable>
-                );
-              })}
-              <Pressable onPress={handlePackageSubmit} style={styles.submitBtn}>
-                <Text style={styles.submitText}>Next</Text>
-              </Pressable>
-            </View>
 
-          </View>
-        )}
+
       </ScrollView>
     </View>
   );
@@ -221,15 +193,15 @@ const styles = StyleSheet.create({
       fontSize: 17,
       fontWeight: "bold",
     },
-    textHeading:{
-      fontSize: 18,
-      fontWeight: "bold",
-      marginTop: 20,
-    },
-    resultText:{
-      fontSize: 16,
-      marginTop: 5,
-    },
+    // textHeading:{
+    //   fontSize: 18,
+    //   fontWeight: "bold",
+    //   marginTop: 20,
+    // },
+    // resultText:{
+    //   fontSize: 16,
+    //   marginTop: 5,
+    // },
     resultTextBottom:{
       marginBottom: 30,
     },
@@ -258,27 +230,31 @@ const styles = StyleSheet.create({
       backgroundColor: '#d0f0c0',
       borderColor: '#4caf50',
     },
-    textItem: {
-      padding: 8,
-      margin: 4,
-      backgroundColor: '#eee',
-      borderRadius: 10,
-    },
-    textItemSelected: {
-      backgroundColor: '#add8e6', // Light blue for selected
-    },
-    submitBtn: {
-      backgroundColor: '#4caf50',
-      padding: 12,
-      marginTop: 16,
-      marginBottom:30,
-      borderRadius: 6,
-      alignItems: 'center',
-    },
-    submitText: {
-      color: '#fff',
-      fontWeight: 'bold',
-    }
+    // textItem: {
+    //   padding: 8,
+    //   margin: 4,
+    //   backgroundColor: '#eee',
+    //   borderRadius: 10,
+      // marginBottom: 10,
+      // maxWidth: '45%',        // ← Prevents wide items from stretching the row
+      // flexGrow: 1,            // ← Allows them to expand nicely
+      // flexShrink: 1,          // ← Shrinks if space is tight
+    // },
+    // textItemSelected: {
+    //   backgroundColor: '#add8e6', // Light blue for selected
+    // },
+    // submitBtn: {
+    //   backgroundColor: '#4caf50',
+    //   padding: 12,
+    //   marginTop: 16,
+    //   marginBottom:30,
+    //   borderRadius: 6,
+    //   alignItems: 'center',
+    // },
+    // submitText: {
+    //   color: '#fff',
+    //   fontWeight: 'bold',
+    // }
 });
 
 export default analyzeImage;
