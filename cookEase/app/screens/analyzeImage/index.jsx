@@ -57,7 +57,7 @@ const analyzeImage = () => {
     router.push('/screens/RecipeInput');
     
     // Clear labels after submission
-    dispatch(clearLabels());
+
   };
 
   const analyzeImageFunction = async (uri) => {
