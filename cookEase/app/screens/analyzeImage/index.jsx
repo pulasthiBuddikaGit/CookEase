@@ -56,7 +56,7 @@ const analyzeImage = () => {
     dispatch(addIngredients(selectedTexts));
     router.push('/screens/RecipeInput');
     
-    // Clear labels after submission
+    // Clear texts after submission
 
   };
 
