@@ -22,6 +22,9 @@ const imageProcessingSlice = createSlice({
     clearLabels: (state) => {
       state.labels = [];
     },
+    clearTexts: (state) => {
+      state.texts = [];
+    },
     setTexts: (state, action) => {
       state.texts = action.payload;
     },
