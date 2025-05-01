@@ -24,6 +24,14 @@ const analyzeImage = () => {
     }
   };
 
+  const toggleText = (text) => {
+    if (selectedTexts.includes(text)) {
+      setSelectedTexts(selectedTexts.filter(t => t !== text));
+    } else {
+      setSelectedTexts([...selectedTexts, text]);
+    }
+  };
+
   const handleSubmit = () => {
     if (selectedLabels.length < 1) {
       alert("Please select at least two ingredients.");
