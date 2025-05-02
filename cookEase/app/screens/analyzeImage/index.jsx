@@ -522,6 +522,7 @@ const analyzeImage = () => {
         {isLoading && scanType === 'ingredient' && <LabelSkeleton />}
         {isLoading && scanType === 'package' && <PackageSkeleton />}
 
+        {/* not loading label content */}
         {!isLoading && scanType === 'ingredient' && labels.length > 0 && (
           <View>
             <Text style={styles.heading}>Select Ingredients:</Text>
