@@ -509,6 +509,7 @@ const analyzeImage = () => {
             resizeMode="contain"
           />
         }
+        {/* new */}
         <TouchableOpacity 
           style={[styles.button, isLoading && styles.disabledButton]} 
           onPress={() => !isLoading && analyzeImageFunction(imageUri)}
@@ -516,7 +517,8 @@ const analyzeImage = () => {
         >
           <Text style={styles.buttonText}>{isLoading ? "Analyzing..." : "Analyze Image"}</Text>
         </TouchableOpacity>
-
+        
+        {/* new */}
         {isLoading && scanType === 'ingredient' && <LabelSkeleton />}
         {isLoading && scanType === 'package' && <PackageSkeleton />}
 
