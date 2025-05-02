@@ -40,6 +40,8 @@ app-example
 firebaseConfig.js
 google-services.json
 
+/utils/APIKeys.js
+
 android
 expo-env.d.ts
 .env
