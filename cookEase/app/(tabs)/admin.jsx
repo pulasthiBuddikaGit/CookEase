@@ -62,16 +62,6 @@ export default function Admin() {
     ],
   };
 
-  // Data for Devices Used (Bar Chart)
-  const devicesUsedData = {
-    labels: ['Linux', 'Mac', 'iOS', 'Android', 'Other'],
-    datasets: [
-      {
-        data: [10000, 25000, 15000, 5000, 5000],
-      },
-    ],
-  };
-
   // Data for Users by Country (Pie Chart)
   const usersByCountryData = [
     {
@@ -127,7 +117,7 @@ export default function Admin() {
     },
   };
 
-  // Function to handle bar chart tap (User Age Group and Devices Used)
+  // Function to handle bar chart tap (User Age Group)
   const handleBarChartPress = (index, label, value) => {
     setSelectedBarIndex(index);
     Alert.alert(
@@ -223,42 +213,6 @@ export default function Admin() {
             <Text style={styles.tooltipText}>{tooltip.value}</Text>
           </View>
         )}
-      </View>
-
-      {/* Devices Used Section */}
-      <View style={[styles.card, { minHeight: chartHeight + 50 }]}>
-        <Text style={styles.cardTitle}>Devices Used</Text>
-        <TouchableOpacity
-          onPress={(event) => {
-            const x = event.nativeEvent.locationX;
-            const barWidth = chartWidth / devicesUsedData.labels.length;
-            const index = Math.floor(x / barWidth);
-            if (index >= 0 && index < devicesUsedData.labels.length) {
-              handleBarChartPress(index, devicesUsedData.labels[index], devicesUsedData.datasets[0].data[index]);
-            }
-          }}
-        >
-          <BarChart
-            data={{
-              ...devicesUsedData,
-              datasets: [
-                {
-                  data: devicesUsedData.datasets[0].data.map((value, i) =>
-                    i === selectedBarIndex ? value + 1000 : value
-                  ),
-                },
-              ],
-            }}
-            width={chartWidth}
-            height={chartHeight}
-            yAxisLabel=""
-            yAxisSuffix="K"
-            fromZero
-            chartConfig={chartConfig}
-            style={styles.chart}
-            verticalLabelRotation={30}
-          />
-        </TouchableOpacity>
       </View>
 
       {/* Users by Country Section */}
