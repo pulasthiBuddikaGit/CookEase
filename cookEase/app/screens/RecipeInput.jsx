@@ -12,28 +12,26 @@ import {
 import { Picker } from "@react-native-picker/picker"; // Import Picker
 import { useRouter } from "expo-router";
 import { generateRecipe } from "../../utils/openaiServiceB"; // Import OpenAI function
-import ImageProcessing from "../../utils/ImageProcessing ";
+import ImageProcessing from "../../utils/ImageProcessing "; // Fixed the extra space in import
+import { db } from "../../firebaseConfig";
+import { getAuth } from "firebase/auth";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export default function RecipeInput() {
   const [ingredients, setIngredients] = useState("");
   const [recipe, setRecipe] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [cookingTime, setCookingTime] = useState("30 minutes"); // Default time
+  const [cookingTime, setCookingTime] = useState("15 minutes"); // Default time
   const [complexity, setComplexity] = useState("Easy"); // Default complexity
+  const [serve, setServe] = useState(1); // Default servings
+  const [country, setCountry] = useState("Sri Lankan");
+ 
+
 
   const router = useRouter();
 
-  const validateIngredients = (text) => {
-    const validPattern = /^[A-Za-z, ]*$/;
-    if (validPattern.test(text)) {
-      setIngredients(text);
-      setError("");
-    } else {
-      setError("Only letters and commas are allowed.");
-    }
-  };
-
+  // Handle recipe generation and saving to Firebase
   const handleGenerateRecipe = async () => {
     if (!ingredients.trim() || ingredients.split(",").length < 2) {
       Alert.alert("Error", "Please enter at least two ingredients.");
@@ -46,16 +44,58 @@ export default function RecipeInput() {
     }
 
     setLoading(true);
-    setRecipe("");
+    setRecipe(""); // Clear previous recipe
 
     try {
-      let generatedRecipe = await generateRecipe(ingredients, cookingTime, complexity);
+      const auth = getAuth();
+      const userId = auth.currentUser?.uid;
+
+      if (!userId) {
+        throw new Error("User not logged in");
+      }
+
+      let generatedRecipe = await generateRecipe(ingredients, cookingTime, complexity, country, serve);
       generatedRecipe = generatedRecipe.replace(/#/g, "");
       setRecipe(generatedRecipe);
+
+      const recipe_title =
+        generatedRecipe.split("\n")[0] || "Generated Recipe";
+
+      // Prepare recipe data for Firestore
+      const recipeData = {
+        recipe_id: Math.random().toString(36).substr(2, 9), // Unique recipe ID
+        ingredients, // List of ingredients used
+        user_id: userId, // User who generated the recipe
+        recipe_title,
+        cookingTime, // Cooking time
+        complexity, // Complexity of the recipe
+        country, // Country or region of origin
+        serve, // Number of servings
+        recipe: generatedRecipe, // The generated recipe text
+        createdAt: serverTimestamp(), // Timestamp when the recipe was created
+      };
+
+      // Save recipe to Firestore
+      await addDoc(collection(db, "recipes"), recipeData);
+
+      console.log("Recipe successfully saved to Firestore!");
     } catch (error) {
-      Alert.alert("Error", "Failed to generate recipe. Please try again.");
+      console.error("Error generating and saving recipe:", error);
+      Alert.alert("Error", "An error occurred while generating the recipe.");
     } finally {
       setLoading(false);
+    }
+  };
+  
+
+  // Validate ingredients input
+  const validateIngredients = (text) => {
+    const validPattern = /^[A-Za-z, ]*$/;
+    if (validPattern.test(text)) {
+      setIngredients(text);
+      setError("");
+    } else {
+      setError("Only letters and commas are allowed.");
     }
   };
 
@@ -66,46 +106,77 @@ export default function RecipeInput() {
         <Text style={styles.header}>Generate Recipe</Text>
 
         <Text style={styles.title}>Enter Ingredients</Text>
-        {/* <TextInput
-          style={[styles.input, error ? styles.inputError : null]}
-          placeholder="Please enter at least two ingredients.                                    E.g. Chicken, Rice, Onion..."
-          value={ingredients}
-          onChangeText={validateIngredients}
-        />
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={{ flex: 1 }}>
+            <TextInput
+              style={[styles.input, error ? styles.inputError : null]}
+              placeholder="Please enter at least two ingredients. E.g. Chicken, Rice, Onion..."
+              value={ingredients}
+              onChangeText={validateIngredients}
+            />
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          </View>
 
-        <ImageProcessing/> */}
+          {/* ImageProcessing Component */}
+          <View style={{ marginLeft: 10 }}>
+            <ImageProcessing />
+          </View>
+        </View>
 
-<View style={{ flexDirection: "row", alignItems: "center" }}>
-  <View style={{ flex: 1 }}>
-    <TextInput
-      style={[styles.input, error ? styles.inputError : null]}
-      placeholder="Please enter at least two ingredients. E.g. Chicken, Rice, Onion..."
-      value={ingredients}
-      onChangeText={validateIngredients}
-    />
-    {error ? <Text style={styles.errorText}>{error}</Text> : null}
-  </View>
-
-  <View style={{ marginLeft: 10 }}>
-    <ImageProcessing />
-  </View>
-</View>
-
-
-        <Text style={styles.title}>Select Cooking Time</Text>
-        <Picker style={styles.picker} selectedValue={cookingTime} onValueChange={(itemValue) => setCookingTime(itemValue)}>
+        <Text style={styles.title}>Cooking Time</Text>
+        <Picker
+          style={styles.picker}
+          selectedValue={cookingTime}
+          onValueChange={(itemValue) => setCookingTime(itemValue)}
+        >
           <Picker.Item label="15 minutes" value="15 minutes" />
           <Picker.Item label="30 minutes" value="30 minutes" />
           <Picker.Item label="45 minutes" value="45 minutes" />
           <Picker.Item label="1 hour" value="1 hour" />
         </Picker>
 
-        <Text style={styles.title}>Select Complexity</Text>
-        <Picker style={styles.picker} selectedValue={complexity} onValueChange={(itemValue) => setComplexity(itemValue)}>
+        <Text style={styles.title}>Complexity</Text>
+        <Picker
+          style={styles.picker}
+          selectedValue={complexity}
+          onValueChange={(itemValue) => setComplexity(itemValue)}
+        >
           <Picker.Item label="Easy" value="Easy" />
           <Picker.Item label="Medium" value="Medium" />
           <Picker.Item label="Hard" value="Hard" />
+        </Picker>
+
+        <Text style={styles.title}>Servings</Text>
+        <View style={styles.servingContainer}>
+          <TouchableOpacity
+            style={styles.servingButton}
+            onPress={() => setServe(serve > 1 ? serve - 1 : 1)} // Decrease servings
+          >
+            <Text style={styles.servingButtonText}>-</Text>
+          </TouchableOpacity>
+          <Text style={styles.servingText}>{serve}</Text>
+          <TouchableOpacity
+            style={styles.servingButton}
+            onPress={() => setServe(serve + 1)} // Increase servings
+          >
+            <Text style={styles.servingButtonText}>+</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.title}>Cuisine</Text>
+        <Picker
+          style={styles.picker}
+          selectedValue={country}
+          onValueChange={(itemValue) => setCountry(itemValue)}
+        >
+          <Picker.Item label="Sri Lankan" value="Sri Lankan" />
+          <Picker.Item label="Indian" value="Indian" />
+          <Picker.Item label="Italian" value="Italian" />
+          <Picker.Item label="Japanese" value="Japanese" />
+          <Picker.Item label="Thai" value="Thai" />
+          <Picker.Item label="American" value="American" />
+          <Picker.Item label="Korean" value="Korean" />
+          <Picker.Item label="Chinese" value="Chinese" />
         </Picker>
 
         <TouchableOpacity style={styles.generateButton} onPress={handleGenerateRecipe}>
@@ -120,7 +191,7 @@ export default function RecipeInput() {
       {loading && <ActivityIndicator size="large" color="green" style={{ marginTop: 20 }} />}
       {recipe ? (
         <View style={styles.recipeContainer}>
-          <Text style={styles.recipeTitle}>Generated Recipe</Text>
+          <Text style={styles.recipeTitle}>Recipe</Text>
           {recipe.split("\n").map((line, index) => (
             <Text key={index} style={styles.recipeText}>
               {line.trim()}
@@ -133,46 +204,135 @@ export default function RecipeInput() {
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, padding: 20, justifyContent: "center", backgroundColor: "#D4EDDA" },
-
-  // Glass Effect for Form Container
-  
-
-  formContainer: {
-    backgroundColor: "white", // Transparent white
-    borderRadius: 15, // Rounded corners
+  container: {
+    flexGrow: 1,
     padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    //elevation: 0, // For Android shadow effect
-    borderWidth: 1,
-    //borderColor: "rgba(255, 255, 255, 0.3)", // Subtle border
-    //backdropFilter: "blur(10px)", // Blur effect
+    justifyContent: "center",
+    backgroundColor: "#fff",
   },
 
-  header: { fontSize: 24, fontWeight: "bold", textAlign: "center", marginBottom: 20 },
-  title: { fontSize: 18, fontWeight: "bold", marginBottom: 15, marginTop: 20 },
-  input: { borderWidth: 2, borderColor: "#ccc", borderRadius: 8, padding: 10, height:80 },
-  inputError: { borderColor: "red", borderWidth: 2 },
-  errorText: { color: "red", marginBottom: 10 },
-  picker: { backgroundColor: "rgba(255, 255, 255, 0.5)", height: 55, borderRadius: 5 },
-  generateButton: { backgroundColor: "green", paddingVertical: 10, paddingHorizontal: 15, borderRadius: 8, width: 300, marginTop: 30, alignItems: "center", alignSelf: "center" },
-  buttonText: { color: "white", fontSize: 14, fontWeight: "bold", textAlign: "center" },
-  divider: { height: 3, backgroundColor: "gray", marginVertical: 30, borderRadius: 5 },
-  recipeContainer: { backgroundColor: "rgba(255, 255, 255, 0.2)", // Transparent white
-    borderRadius: 15, // Rounded corners
+  formContainer: {
+    backgroundColor: "white",
+    borderRadius: 15,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 10,
+  },
+
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 15,
+    marginTop: 20,
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 10,
+    height: 80,
+  },
+
+  inputError: {
+    borderColor: "red",
+    borderWidth: 2,
+  },
+
+  errorText: {
+    color: "red",
+    marginBottom: 10,
+  },
+
+  picker: {
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    height: 55,
+    borderRadius: 5,
+  },
+
+  generateButton: {
+    backgroundColor: "green",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    width: 300,
+    marginTop: 30,
+    alignItems: "center",
+    alignSelf: "center",
+  },
+
+  buttonText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: "gray",
+    marginVertical: 30,
+    borderRadius: 5,
+  },
+
+  recipeContainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    borderRadius: 15,
     padding: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
-    elevation: 10, // For Android shadow effect
+    elevation: 10,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.3)", // Subtle border
-    backdropFilter: "blur(10px)", // Blur effect 
-    },
-  recipeTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 30, textAlign: "center" },
-  recipeText: { fontSize: 16, lineHeight: 22, marginBottom: 5,textAlign: "center" },
+    borderColor: "rgba(255, 255, 255, 0.3)",
+  },
+
+  recipeTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 30,
+    textAlign: "center",
+  },
+
+  recipeText: {
+    fontSize: 16,
+    lineHeight: 22,
+    marginBottom: 5,
+    textAlign: "center",
+  },
+
+  servingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  servingButton: {
+    backgroundColor: "green",
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 5,
+  },
+
+  servingButtonText: {
+    color: "white",
+    fontSize: 20,
+  },
+
+  servingText: {
+    fontSize: 18,
+    marginHorizontal: 20,
+  },
 });
