@@ -549,6 +549,7 @@ const analyzeImage = () => {
           </View>
         )}
 
+        {/* not loading package content */}
         {!isLoading && scanType === 'package' && texts.length > 0 && (
           <View>
             <View style={styles.packageTextContainer}>
