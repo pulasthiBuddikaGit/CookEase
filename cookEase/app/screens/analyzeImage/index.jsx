@@ -517,8 +517,8 @@ const analyzeImage = () => {
         >
           <Text style={styles.buttonText}>{isLoading ? "Analyzing..." : "Analyze Image"}</Text>
         </TouchableOpacity>
-        
-        {/* new */}
+
+        {/* loading content */}
         {isLoading && scanType === 'ingredient' && <LabelSkeleton />}
         {isLoading && scanType === 'package' && <PackageSkeleton />}
 
