@@ -1,18 +1,13 @@
-import React, { useState } from "react";
-import { View, Image, Alert, StyleSheet,TouchableOpacity,Text } from "react-native";
+import React from "react";
+import { View,Alert, StyleSheet} from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import CameraButton from "../components/p-components/CameraBtn";
 import SelectionPopup from "../components/p-components/SelectionPopup";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import axios from "axios";
-import * as FileSystem from 'expo-file-system';
-import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import {
   setImageUri,
-  setLabels,
-  setTexts,
   setScanType,
   setPopupVisible,
 } from '../redux/p-slices/imageProcessingSlice';
@@ -20,11 +15,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 
 const ImageProcessing = () => { 
-  // const [imageUri, setImageUri] = useState(null);
-  // const [popupVisible, setPopupVisible] = useState(false);
-  // const [labels, setLabels] = useState([]);
+
   const dispatch = useDispatch();
-  const { imageUri, popupVisible, scanType, labels, texts } = useSelector((state) => state.imageProcessing);
+  const { popupVisible } = useSelector((state) => state.imageProcessing);
 
   const router = useRouter();
 
