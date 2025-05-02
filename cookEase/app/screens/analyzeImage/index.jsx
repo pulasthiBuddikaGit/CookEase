@@ -363,7 +363,7 @@ const analyzeImage = () => {
   const { imageUri, scanType, labels, texts } = useSelector((state) => state.imageProcessing);
   const [selectedLabels, setSelectedLabels] = useState([]);
   const [selectedTexts, setSelectedTexts] = useState([]);
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false); // loading state
 
   const router = useRouter();
   
