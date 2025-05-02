@@ -1,6 +1,7 @@
 import React from 'react';
+import { View, StyleSheet } from 'react-native';
 
-const LabelSkelton = () => {
+const LabelSkeleton = () => {
   return (
     <View>
       <View style={styles.skeletonHeading} />
@@ -38,4 +39,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default LabelSkelton;
+export default LabelSkeleton;
