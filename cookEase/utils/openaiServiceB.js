@@ -18,41 +18,75 @@ export const generateRecipe = async (ingredientsInput, cookingTime, complexity,u
       throw new Error("Please provide at least one ingredient.");
     }
 
-    const prompt = `Generate a simple recipe using ONLY the following ingredients: 
-    ${ingredientsList.join(", ")}.
+    const prompt = `You are a skilled ${country} chef who only creates recipes using real, commonly used cooking ingredients.
 
-   - Cooking Time: ${cookingTime}  
-- Complexity: ${complexity}  
-- Number of Servings: ${serve}  
-- Country: ${country}  
+You are a recipe generator. Only respond with a recipe if the user input includes valid food items or ingredients. If the input includes any non-edible or irrelevant item, politely reject it with a message like:
 
-Please format the output clearly using the following structure:
+That is not a valid food ingredient.
+
+Do not generate a recipe in such cases.
+
+Otherwise, generate a simple ${country} recipe using the following ingredients:  
+${ingredientsList.join(", ")}
+
+Cooking Time: ${cookingTime}  
+Complexity: ${complexity}   
+Country: ${country}
+
+Please include the following sections and formatting:
 
 Title  
-[Only the recipe title. No label like 'Title:' or 'Recipe Name:']
-
-Number of Servings  
-[Show the number of servings on a new line]
+[Only the recipe title. Do not write 'Title:' or 'Recipe Name:']
 
 Short Description  
-[Provide a very short description of the dish, get the user input Number of Servings ]
+[A very short description of the dish.]
 
 Ingredients  
-[List of ingredients with exact amounts]
+[List all ingredients with exact amounts. One per line.]
 
 Cooking Instructions  
-[Step-by-step instructions. Each step on a new line.]
+[Numbered steps. Each on a new line.]
 
-Formatting Rules:  
-- Use clear section headers (e.g., "Number of Servings", "Ingredients", "Cooking Instructions") — make them bold and use '-' before the header.
-- Do NOT write the header and content on the same line.
-- Write content of Cooking Instructions with number points and left align.
-- Do NOT use symbols like '**', ':', '-', or markdown.
-- Do NOT include nutritional info, tips, or substitutions.
-- Keep everything clean, structured, and suitable for direct HTML rendering or app display.`;
+Formatting Instructions:  
+- **Make all section headers bold** (Title, Number of Servings, Short Description, Ingredients, Cooking Instructions).  
+- Do **not** place the header and content on the same line. The content must be on the line **below** the header.  
+- Under "Cooking Instructions", each instruction should be numbered and left-aligned.  
+- Do **not** use any symbols like '*', '-', ':', or markdown syntax.  
+- Do **not** include nutrition facts, tips, substitutions, or extra notes.  
+- Output must be clean, structured, and ready for HTML or app display.  
+- If the input includes invalid or non-food items, do **not** generate a recipe. Return only the message: That is not a valid food ingredient.
+
+Example Output:
+
+Vegetable Stir Fry
+
+
+------------Short Description------------   
+
+A quick and healthy mix of sautéed vegetables in soy sauce.
+
+------------Ingredients------------  
+
+1 cup broccoli  
+1 cup bell peppers  
+1 carrot  
+2 tablespoons soy sauce  
+1 tablespoon olive oil  
+Salt  
+
+------------Cooking Instructions------------ 
+
+1. Chop all vegetables evenly.  
+2. Heat oil in a pan over medium heat.  
+3. Add vegetables and stir-fry for 5–7 minutes.  
+4. Add soy sauce and salt, mix well.  
+5. Serve hot.  
+
+Only respond using this format.
+`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4",
       messages: [
         { role: "system", content: "You are an experienced home cook who creates easy and delicious recipes for families using simple techniques." },
         { role: "user", content: prompt },
