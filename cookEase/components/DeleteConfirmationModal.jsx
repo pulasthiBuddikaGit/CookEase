@@ -8,7 +8,7 @@ const DeleteConfirmationModal = ({ visible, onCancel }) => {
       transparent={true}
       visible={visible}
       animationType="fade"
-      onRequestClose={onCancel} // Close modal on hardware back press (Android)
+      onRequestClose={onCancel} 
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
