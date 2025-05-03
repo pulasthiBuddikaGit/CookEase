@@ -1,6 +1,6 @@
 // app/account/edit.jsx
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ActivityIndicator, ScrollView, Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -23,7 +23,7 @@ export default function EditAccount() {
   const [gender, setGender] = useState('');
   const [country, setCountry] = useState('');
   const [status, setStatus] = useState('');
-  const [errors, setErrors] = useState({ displayName: '', photoURL: '', password: '', newPassword: '', age: '', gender: '', country: '' });
+  const [errors, setErrors] = useState({});
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [newPasswordVisible, setNewPasswordVisible] = useState(false);
   const [currentPasswordVisible, setCurrentPasswordVisible] = useState(false);
@@ -48,9 +48,42 @@ export default function EditAccount() {
     loadUserData();
   }, [currentUser]);
 
+  const handleSave = async () => {
+    if (!validateForm()) {
+      setStatus('Please fix the errors');
+      return;
+    }
+    try {
+      setStatus('Saving...');
+      const finalPhotoURL = photoURL.trim() === '' ? null : photoURL;
+      if (newPassword) await updatePassword(currentUser, newPassword);
+      await updateProfile(currentUser, { displayName, photoURL: finalPhotoURL });
+      await updateUserDocument(currentUser.uid, { displayName, photoURL: finalPhotoURL, age: parseInt(age), gender, country });
+      setStatus('Saved successfully');
+      Alert.alert('Success', 'Profile updated!', [{ text: 'OK', onPress: () => router.navigate('/(tabs)/user') }]);
+    } catch (error) {
+      setStatus(`Error: ${error.message}`);
+      Alert.alert('Error', error.message);
+    }
+  };
+
+  const handleCancel = () => router.navigate('/(tabs)/user');
+  const handleBack = () => router.navigate('/(tabs)/user');
+  const handleImageError = () => {
+    setIsImageLoading(false);
+    setErrors({ ...errors, photoURL: 'Image failed to load' });
+    setDisplayPhotoURL(defaultPhotoURL);
+  };
+
+  const handlePhotoURLChange = (text) => {
+    setPhotoURL(text);
+    setDisplayPhotoURL(text.trim() === '' ? defaultPhotoURL : text);
+    setErrors({ ...errors, photoURL: '' });
+  };
+
   const validateForm = () => {
     let isValid = true;
-    const newErrors = { displayName: '', photoURL: '', password: '', newPassword: '', age: '', gender: '', country: '' };
+    const newErrors = {};
 
     if (!displayName || displayName.length < 3 || !/^[a-zA-Z0-9_]+$/.test(displayName)) {
       newErrors.displayName = 'Enter a valid username (3+ chars, letters/numbers/underscores only)';
@@ -91,48 +124,8 @@ export default function EditAccount() {
     return isValid;
   };
 
-  const handleSave = async () => {
-    if (!validateForm()) {
-      setStatus('Please fix the errors');
-      return;
-    }
-
-    try {
-      setStatus('Saving...');
-      const finalPhotoURL = photoURL.trim() === '' ? null : photoURL;
-
-      if (newPassword) {
-        await updatePassword(currentUser, newPassword);
-      }
-
-      await updateProfile(currentUser, { displayName, photoURL: finalPhotoURL });
-      await updateUserDocument(currentUser.uid, { displayName, photoURL: finalPhotoURL, age: parseInt(age), gender, country });
-
-      setStatus('Saved successfully');
-      Alert.alert('Success', 'Profile updated!', [{ text: 'OK', onPress: () => router.navigate('/(tabs)/user') }]);
-    } catch (error) {
-      setStatus(`Error: ${error.message}`);
-      Alert.alert('Error', error.message);
-    }
-  };
-
-  const handleCancel = () => router.navigate('/(tabs)/user');
-  const handleBack = () => router.navigate('/(tabs)/user');
-
-  const handleImageError = () => {
-    setIsImageLoading(false);
-    setErrors({ ...errors, photoURL: 'Image failed to load' });
-    setDisplayPhotoURL(defaultPhotoURL);
-  };
-
-  const handlePhotoURLChange = (text) => {
-    setPhotoURL(text);
-    setDisplayPhotoURL(text.trim() === '' ? defaultPhotoURL : text);
-    setErrors({ ...errors, photoURL: '' });
-  };
-
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ alignItems: 'center' }} keyboardShouldPersistTaps="handled">
       <TouchableOpacity style={styles.backButton} onPress={handleBack}>
         <Icon name="arrow-back" size={24} color="#00796b" />
       </TouchableOpacity>
@@ -142,71 +135,68 @@ export default function EditAccount() {
           <Image source={{ uri: displayPhotoURL }} style={styles.profileImage} onLoadStart={() => setIsImageLoading(true)} onLoad={() => setIsImageLoading(false)} onError={handleImageError} />
         </View>
         <Text style={styles.title}>{displayName}</Text>
-
         <View style={styles.form}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Profile Picture URL:</Text>
-            <TextInput style={styles.input} value={photoURL} onChangeText={handlePhotoURLChange} placeholder="http://example.com/image.jpg" />
-            {errors.photoURL ? <Text style={styles.errorText}>{errors.photoURL}</Text> : null}
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>User Name:</Text>
-            <TextInput style={styles.input} value={displayName} onChangeText={setDisplayName} placeholder="Enter your name" />
-            {errors.displayName ? <Text style={styles.errorText}>{errors.displayName}</Text> : null}
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Current Password:</Text>
-            <View style={styles.passwordWrapper}>
-              <TextInput
-                style={styles.passwordInput}
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Enter current password"
-                secureTextEntry={!currentPasswordVisible}
-              />
-              <TouchableOpacity onPress={() => setCurrentPasswordVisible(!currentPasswordVisible)}>
-                <MaterialCommunityIcons name={currentPasswordVisible ? 'eye-off' : 'eye'} size={22} color="#333" />
-              </TouchableOpacity>
+          {[{
+            label: 'Profile Picture URL:', value: photoURL, onChange: handlePhotoURLChange, error: errors.photoURL, placeholder: 'http://example.com/image.jpg'
+          }, {
+            label: 'User Name:', value: displayName, onChange: setDisplayName, error: errors.displayName, placeholder: 'Enter your name'
+          }, {
+            label: 'Age:', value: age, onChange: setAge, error: errors.age, placeholder: 'Enter your age', keyboardType: 'numeric'
+          }, {
+            label: 'Country:', value: country, onChange: setCountry, error: errors.country, placeholder: 'Enter your country'
+          }].map((field, idx) => (
+            <View key={idx} style={styles.inputContainer}>
+              <Text style={styles.label}>{field.label}</Text>
+              <View style={styles.passwordWrapper}>
+                <TextInput
+                  style={styles.passwordInput}
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  placeholder={field.placeholder}
+                  secureTextEntry={false}
+                  keyboardType={field.keyboardType || 'default'}
+                />
+              </View>
+              {field.error && <Text style={styles.errorText}>{field.error}</Text>}
             </View>
-            {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>New Password:</Text>
-            <View style={styles.passwordWrapper}>
-              <TextInput
-                style={styles.passwordInput}
-                value={newPassword}
-                onChangeText={setNewPassword}
-                placeholder="Enter new password"
-                secureTextEntry={!newPasswordVisible}
-              />
-              <TouchableOpacity onPress={() => setNewPasswordVisible(!newPasswordVisible)}>
-                <MaterialCommunityIcons name={newPasswordVisible ? 'eye-off' : 'eye'} size={22} color="#333" />
-              </TouchableOpacity>
+          ))}
+
+          {[{ label: 'Current Password:', value: password, onChange: setPassword, visible: currentPasswordVisible, setVisible: setCurrentPasswordVisible, error: errors.password }, { label: 'New Password:', value: newPassword, onChange: setNewPassword, visible: newPasswordVisible, setVisible: setNewPasswordVisible, error: errors.newPassword }].map((field, idx) => (
+            <View key={idx} style={styles.inputContainer}>
+              <Text style={styles.label}>{field.label}</Text>
+              <View style={styles.passwordWrapper}>
+                <TextInput
+                  style={styles.passwordInput}
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  placeholder={field.label}
+                  secureTextEntry={!field.visible}
+                />
+                <TouchableOpacity onPress={() => field.setVisible(!field.visible)}>
+                  <MaterialCommunityIcons name={field.visible ? 'eye-off' : 'eye'} size={22} color="#333" />
+                </TouchableOpacity>
+              </View>
+              {field.error && <Text style={styles.errorText}>{field.error}</Text>}
             </View>
-            {errors.newPassword ? <Text style={styles.errorText}>{errors.newPassword}</Text> : null}
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Age:</Text>
-            <TextInput style={styles.input} value={age} onChangeText={setAge} placeholder="Enter your age" keyboardType="numeric" />
-            {errors.age ? <Text style={styles.errorText}>{errors.age}</Text> : null}
-          </View>
+          ))}
+
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Gender (Male/Female/Other):</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker selectedValue={gender} onValueChange={(itemValue) => setGender(itemValue)} style={styles.picker}>
+            <View style={styles.passwordWrapper}>
+              <Picker
+                selectedValue={gender}
+                onValueChange={setGender}
+                style={[styles.passwordInput, Platform.OS === 'android' && { paddingLeft: 10 }]}
+                dropdownIconColor="#00796b"
+                mode="dropdown"
+              >
                 <Picker.Item label="Select Gender" value="" />
                 <Picker.Item label="Male" value="Male" />
                 <Picker.Item label="Female" value="Female" />
                 <Picker.Item label="Other" value="Other" />
               </Picker>
             </View>
-            {errors.gender ? <Text style={styles.errorText}>{errors.gender}</Text> : null}
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Country:</Text>
-            <TextInput style={styles.input} value={country} onChangeText={setCountry} placeholder="Enter your country" />
-            {errors.country ? <Text style={styles.errorText}>{errors.country}</Text> : null}
+            {errors.gender && <Text style={styles.errorText}>{errors.gender}</Text>}
           </View>
         </View>
 
@@ -217,35 +207,35 @@ export default function EditAccount() {
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}><Text style={styles.buttonText}>Save</Text></TouchableOpacity>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 20,
   },
   backButton: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     marginBottom: 15,
   },
   content: {
-    backgroundColor: '#E6F5F3',
+    backgroundColor: "#E6F5F3",
     borderRadius: 20,
     padding: 20,
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   profileImageContainer: {
-    position: 'relative',
+    position: "relative",
     width: 100,
     height: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   profileImage: {
     width: 100,
@@ -254,38 +244,38 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   loader: {
-    position: 'absolute',
+    position: "absolute",
     zIndex: 1,
   },
   title: {
     fontSize: 26,
-    fontWeight: '600',
-    color: '#00796b',
+    fontWeight: "600",
+    color: "#00796b",
     marginBottom: 30,
     letterSpacing: 1,
   },
   form: {
-    width: '100%',
+    width: "100%",
   },
   inputContainer: {
     marginBottom: 20,
   },
   label: {
     fontSize: 16,
-    color: '#333',
-    fontWeight: '500',
+    color: "#333",
+    fontWeight: "500",
     marginBottom: 8,
   },
   inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: '#b0bec5',
+    borderBottomColor: "#b0bec5",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 5,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
@@ -295,67 +285,67 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   inputIcon: {
     marginLeft: 10,
   },
   errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#ffebee',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#ffebee",
     borderRadius: 5,
     padding: 5,
     marginTop: 5,
     borderWidth: 1,
-    borderColor: '#ef5350',
+    borderColor: "#ef5350",
   },
   errorIcon: {
     marginRight: 5,
   },
   errorText: {
     fontSize: 12,
-    color: '#d32f2f',
-    fontStyle: 'italic',
-    fontWeight: '500',
+    color: "#d32f2f",
+    fontStyle: "italic",
+    fontWeight: "500",
   },
   status: {
     fontSize: 14,
-    color: '#00796b',
+    color: "#00796b",
     marginTop: 10,
     marginBottom: 20,
-    textAlign: 'center',
-    fontWeight: '500',
+    textAlign: "center",
+    fontWeight: "500",
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
     marginTop: 30,
   },
   cancelButton: {
-    backgroundColor: '#A3D9C9',
+    backgroundColor: "#A3D9C9",
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 25,
     flex: 1,
     marginRight: 10,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 3,
   },
   saveButton: {
-    backgroundColor: '#A3D9C9',
+    backgroundColor: "#A3D9C9",
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 25,
     flex: 1,
     marginLeft: 10,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
@@ -363,49 +353,49 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: '#fff',
-    fontWeight: '600',
+    color: "#fff",
+    fontWeight: "600",
   },
   pickerWrapper: {
     borderWidth: 1,
-    borderColor: '#3f86f7',
+    borderColor: "#3f86f7",
     borderRadius: 10,
-    overflow: 'hidden',
-    backgroundColor: '#e9f3ff',
+    overflow: "hidden",
+    backgroundColor: "#e9f3ff",
   },
   picker: {
     height: 50,
-    width: '100%',
-    color: '#333',
+    width: "100%",
+    color: "#333",
   },
   passwordWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: '#b0bec5',
+    borderColor: "#b0bec5",
     borderRadius: 8,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingHorizontal: 10,
     height: 40,
   },
   passwordInput: {
     flex: 1,
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   passwordWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: '#b0bec5',
+    borderColor: "#b0bec5",
     borderRadius: 8,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingHorizontal: 10,
     height: 40,
   },
   passwordInput: {
     flex: 1,
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
 });
