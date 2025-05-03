@@ -52,7 +52,7 @@ Formatting Rules:
 - Keep everything clean, structured, and suitable for direct HTML rendering or app display.`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4",
       messages: [
         { role: "system", content: "You are an experienced home cook who creates easy and delicious recipes for families using simple techniques." },
         { role: "user", content: prompt },
