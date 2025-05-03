@@ -1,4 +1,3 @@
-// app/(tabs)/user.jsx
 import React, { useState, useEffect } from "react";
 import {
   Text,
@@ -9,15 +8,20 @@ import {
   Alert,
 } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
-import { signOut, deleteUser } from "firebase/auth";
+import {
+  signOut,
+  deleteUser,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+} from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 import ProtectedScreen from "../../components/s-components/ProtectedScreen";
 import {
   getUserDocument,
   deleteUserDocument,
 } from "../../services/senudi/userService";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 
 const defaultPhotoURL =
   "https://www.pngitem.com/pimgs/m/146-1468479_default-profile-picture-png-transparent-png.png";
@@ -28,7 +32,9 @@ const User = () => {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
-  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [showPasswordInput, setShowPasswordInput] = useState(false);
+  const [password, setPassword] = useState("");
+
   const router = useRouter();
 
   const loadUserProfile = async () => {
@@ -70,34 +76,37 @@ const User = () => {
   };
 
   const handleEditAccount = () => router.push("/account/edit");
-  const handleDeleteCancel = () => setIsDeleteModalVisible(false);
-  const handleDeleteAccount = () => setIsDeleteModalVisible(true);
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteAccount = () => {
+    setShowPasswordInput(true);
+  };
+
+  const cancelDelete = () => {
+    setShowPasswordInput(false);
+    setPassword("");
+  };
+
+  const confirmDeleteAccount = async () => {
     try {
       const user = auth.currentUser;
-      if (!user) throw new Error("No active user");
+      if (!user || !password) return;
 
-      const credential = EmailAuthProvider.credential(
-        user.email,
-        "user-password"
-      );
+      const credential = EmailAuthProvider.credential(user.email, password);
       await reauthenticateWithCredential(user, credential);
 
-      // Delete from Firestore
       await deleteUserDocument(user.uid);
-
-      // Delete from Firebase Auth
       await deleteUser(user);
 
-      // Redirect after successful deletion
+      Alert.alert("Deleted", "Your account has been deleted.");
       router.replace("/auth");
     } catch (error) {
-      if (error.code === "auth/requires-recent-login") {
+      if (error.code === "auth/wrong-password") {
         Alert.alert(
-          "Session Expired",
-          "Please sign in again to delete your account."
+          "Incorrect Password",
+          "Please enter your current password."
         );
+      } else if (error.code === "auth/requires-recent-login") {
+        Alert.alert("Session Expired", "Please sign in again.");
       } else {
         Alert.alert("Error", error.message);
       }
@@ -119,46 +128,35 @@ const User = () => {
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleEditAccount}>
-            <Icon
-              name="edit"
-              size={20}
-              color="#000"
-              style={styles.buttonIcon}
-            />
+            <Icon name="edit" size={20} color="#000" style={styles.buttonIcon} />
             <Text style={styles.buttonText}>Edit Account</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
             style={[styles.button, styles.deleteButton]}
             onPress={handleDeleteAccount}
           >
-            <Icon
-              name="delete"
-              size={20}
-              color="#ff0000"
-              style={styles.buttonIcon}
-            />
+            <Icon name="delete" size={20} color="#ff0000" style={styles.buttonIcon} />
             <Text style={[styles.buttonText, styles.deleteButtonText]}>
               Delete Account
             </Text>
           </TouchableOpacity>
+
           <TouchableOpacity style={styles.button} onPress={handleSignOut}>
-            <Icon
-              name="logout"
-              size={20}
-              color="#000"
-              style={styles.buttonIcon}
-            />
+            <Icon name="logout" size={20} color="#000" style={styles.buttonIcon} />
             <Text style={styles.buttonText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
 
         <DeleteConfirmationModal
-          visible={isDeleteModalVisible}
-          onCancel={handleDeleteCancel}
-          onSuccess={() => router.replace("/auth")}
-          userId={auth.currentUser?.uid}
-          authUser={auth.currentUser}
+          visible={showPasswordInput}
+          onCancel={cancelDelete}
+          onConfirm={confirmDeleteAccount}
+          password={password}
+          setPassword={setPassword}
         />
+
+        {status ? <Text style={styles.status}>{status}</Text> : null}
       </View>
     </ProtectedScreen>
   );
@@ -218,6 +216,7 @@ const styles = StyleSheet.create({
   buttonIcon: { marginRight: 10 },
   buttonText: { fontSize: 16, color: "#000" },
   deleteButtonText: { color: "#ff0000" },
+  status: { marginTop: 10, color: "#00796b", fontSize: 14 },
 });
 
 export default User;
