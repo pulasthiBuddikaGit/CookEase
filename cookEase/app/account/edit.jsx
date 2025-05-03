@@ -1,6 +1,6 @@
 // app/account/edit.jsx
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -132,6 +132,7 @@ export default function EditAccount() {
   };
 
   return (
+    <ScrollView>
     <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={handleBack}>
         <Icon name="arrow-back" size={24} color="#00796b" />
@@ -218,6 +219,7 @@ export default function EditAccount() {
         </View>
       </View>
     </View>
+    </ScrollView>
   );
 }
 
