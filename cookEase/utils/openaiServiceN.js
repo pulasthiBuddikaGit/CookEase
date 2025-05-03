@@ -112,7 +112,7 @@ This format should be consistent for every diet plan generated, with no markdown
 
     // Call OpenAI API
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // or any available model you prefer
+      model: "gpt-4", // or any available model you prefer
       messages: [
         { role: "system", content: "You are a nutrition assistant." },
         { role: "user", content: prompt } // Using the formatted prompt instead of params

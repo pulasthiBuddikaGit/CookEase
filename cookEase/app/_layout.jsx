@@ -51,6 +51,9 @@ export default function RootLayout() {
           <Stack.Screen name="account/edit" options={{ headerShown: true }} />
           <Stack.Screen name="RecipeInput" />
           <Stack.Screen name="RecipeDetails" />
+          <Stack.Screen name="screens/analyzeImage/index"
+            options={{ headerShown: true, title:"Analyze Image" }} 
+          />
         </Stack>
       </UserProvider>
     </Provider>
