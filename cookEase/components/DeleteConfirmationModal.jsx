@@ -1,8 +1,21 @@
 // components/DeleteConfirmationModal.jsx
 import React from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+} from 'react-native';
 
-const DeleteConfirmationModal = ({ visible, onCancel }) => {
+const DeleteConfirmationModal = ({
+  visible,
+  onCancel,
+  onConfirm,
+  password,
+  setPassword,
+}) => {
   return (
     <Modal
       transparent={true}
@@ -14,13 +27,22 @@ const DeleteConfirmationModal = ({ visible, onCancel }) => {
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Confirm Delete</Text>
           <Text style={styles.modalMessage}>
-            Are you sure you want to delete your account? This action cannot be undone.
+            Enter your current password to confirm account deletion.
           </Text>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Current password"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.deleteButton}>
+            <TouchableOpacity style={styles.deleteButton} onPress={onConfirm}>
               <Text style={styles.deleteButtonText}>Delete</Text>
             </TouchableOpacity>
           </View>
@@ -33,7 +55,7 @@ const DeleteConfirmationModal = ({ visible, onCancel }) => {
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -41,13 +63,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
     padding: 20,
-    width: '80%',
+    width: '85%',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
   },
   modalTitle: {
     fontSize: 20,
@@ -59,11 +76,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 15,
+  },
+  input: {
+    width: '100%',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 15,
+    fontSize: 16,
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     width: '100%',
   },
   cancelButton: {
