@@ -129,7 +129,6 @@ export default function Index() {
                 <Text style={styles.moreButtonText}>{expandedCalories ? "Collapse" : "More Details"}</Text>
               </TouchableOpacity>
             </View>
-
             <View>
               <PieChartScreen />
             </View>
