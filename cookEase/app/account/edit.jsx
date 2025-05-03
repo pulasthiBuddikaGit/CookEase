@@ -1,74 +1,89 @@
 // app/account/edit.jsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ActivityIndicator } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { updateProfile } from 'firebase/auth';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { updateProfile, updatePassword } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
+import { updateUserDocument, getUserDocument } from '../../services/senudi/userService';
 
 export default function EditAccount() {
   const router = useRouter();
   const currentUser = auth.currentUser;
+  const defaultPhotoURL = 'https://www.pngitem.com/pimgs/m/146-1468479_default-profile-picture-png-transparent-png.png';
 
-  const defaultPhotoURL = 'https://www.pngitem.com/pimgs/m/146-1468479_default-profile-picture-png-transparent-png.png'; // Default silhouette
-
-  const [displayName, setDisplayName] = useState(currentUser?.displayName || 'Jane_Doe');
-  const [photoURL, setPhotoURL] = useState(currentUser?.photoURL || ''); // Allow empty string
-  const [displayPhotoURL, setDisplayPhotoURL] = useState(currentUser?.photoURL || defaultPhotoURL);
-  const [isImageLoading, setIsImageLoading] = useState(false);
+  const [displayName, setDisplayName] = useState('');
+  const [photoURL, setPhotoURL] = useState('');
+  const [displayPhotoURL, setDisplayPhotoURL] = useState(defaultPhotoURL);
+  const [age, setAge] = useState('');
   const [password, setPassword] = useState('');
-  const [age, setAge] = useState('27');
+  const [newPassword, setNewPassword] = useState('');
+  const [gender, setGender] = useState('');
+  const [country, setCountry] = useState('');
   const [status, setStatus] = useState('');
-  const [errors, setErrors] = useState({
-    displayName: '',
-    photoURL: '',
-    password: '',
-    age: '',
-  });
+  const [errors, setErrors] = useState({ displayName: '', photoURL: '', password: '', newPassword: '', age: '', gender: '', country: '' });
+  const [isImageLoading, setIsImageLoading] = useState(false);
+  const [newPasswordVisible, setNewPasswordVisible] = useState(false);
+  const [currentPasswordVisible, setCurrentPasswordVisible] = useState(false);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const loadUserData = async () => {
+      const doc = await getUserDocument(currentUser.uid);
+      const name = doc?.displayName || currentUser.displayName || '';
+      const photo = doc?.photoURL || currentUser.photoURL || '';
+      const userAge = doc?.age?.toString() || '';
+      const userGender = doc?.gender || '';
+      const userCountry = doc?.country || '';
+
+      setDisplayName(name);
+      setPhotoURL(photo);
+      setDisplayPhotoURL(photo || defaultPhotoURL);
+      setAge(userAge);
+      setGender(userGender);
+      setCountry(userCountry);
+    };
+    loadUserData();
+  }, [currentUser]);
 
   const validateForm = () => {
     let isValid = true;
-    const newErrors = { displayName: '', photoURL: '', password: '', age: '' };
+    const newErrors = { displayName: '', photoURL: '', password: '', newPassword: '', age: '', gender: '', country: '' };
 
-    // Validate User Name
-    if (!displayName) {
-      newErrors.displayName = 'User Name is required';
-      isValid = false;
-    } else if (displayName.length < 3) {
-      newErrors.displayName = 'User Name must be at least 3 characters long';
-      isValid = false;
-    } else if (!/^[a-zA-Z0-9_]+$/.test(displayName)) {
-      newErrors.displayName = 'User Name can only contain letters, numbers, and underscores';
+    if (!displayName || displayName.length < 3 || !/^[a-zA-Z0-9_]+$/.test(displayName)) {
+      newErrors.displayName = 'Enter a valid username (3+ chars, letters/numbers/underscores only)';
       isValid = false;
     }
 
-    // Validate Photo URL (optional, but if provided, must be valid)
     if (photoURL && !/^(https?:\/\/)/i.test(photoURL)) {
-      newErrors.photoURL = 'URL must start with http:// or https:// (base64 URLs are not supported)';
-      isValid = false;
-    } else if (photoURL && photoURL.length > 2048) {
-      newErrors.photoURL = 'URL is too long (max 2048 characters)';
+      newErrors.photoURL = 'Invalid image URL';
       isValid = false;
     }
 
-    // Validate Password
-    if (!password) {
-      newErrors.password = 'Password is required';
-      isValid = false;
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters long';
-      isValid = false;
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-      newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+    if (newPassword && (newPassword.length < 6 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(newPassword))) {
+      newErrors.newPassword = 'Password must be 6+ chars with upper, lower and number';
       isValid = false;
     }
 
-    // Validate Age
-    if (!age) {
-      newErrors.age = 'Age is required';
+    if (newPassword && !password) {
+      newErrors.password = 'Enter current password to update new password';
       isValid = false;
-    } else if (isNaN(age) || age < 1 || age > 120) {
-      newErrors.age = 'Age must be a number between 1 and 120';
+    }
+
+    if (!age || isNaN(age) || age < 1 || age > 120) {
+      newErrors.age = 'Age must be 1-120';
+      isValid = false;
+    }
+
+    if (!gender || !['Male', 'Female', 'Other'].includes(gender)) {
+      newErrors.gender = 'Select Male, Female or Other';
+      isValid = false;
+    }
+
+    if (!country) {
+      newErrors.country = 'Country is required';
       isValid = false;
     }
 
@@ -78,203 +93,128 @@ export default function EditAccount() {
 
   const handleSave = async () => {
     if (!validateForm()) {
-      setStatus('Please fix the errors in the form');
+      setStatus('Please fix the errors');
       return;
     }
 
     try {
-      setStatus('Saving changes...');
-
-      // If photoURL is empty, set it to null
+      setStatus('Saving...');
       const finalPhotoURL = photoURL.trim() === '' ? null : photoURL;
 
-      // Update display name and photo URL
-      await updateProfile(currentUser, {
-        displayName: displayName,
-        photoURL: finalPhotoURL,
-      });
+      if (newPassword) {
+        await updatePassword(currentUser, newPassword);
+      }
 
-      setStatus('Profile updated successfully');
-      Alert.alert('Success', 'Profile updated successfully', [
-        { text: 'OK', onPress: () => router.navigate('/(tabs)/user') },
-      ]);
+      await updateProfile(currentUser, { displayName, photoURL: finalPhotoURL });
+      await updateUserDocument(currentUser.uid, { displayName, photoURL: finalPhotoURL, age: parseInt(age), gender, country });
+
+      setStatus('Saved successfully');
+      Alert.alert('Success', 'Profile updated!', [{ text: 'OK', onPress: () => router.navigate('/(tabs)/user') }]);
     } catch (error) {
       setStatus(`Error: ${error.message}`);
       Alert.alert('Error', error.message);
     }
   };
 
-  const handleCancel = () => {
-    router.navigate('/(tabs)/user');
-  };
+  const handleCancel = () => router.navigate('/(tabs)/user');
+  const handleBack = () => router.navigate('/(tabs)/user');
 
-  const handleBack = () => {
-    router.navigate('/(tabs)/user');
-  };
-
-  // Handle image load error
   const handleImageError = () => {
     setIsImageLoading(false);
-    setErrors({ ...errors, photoURL: 'Failed to load image. Please check the URL.' });
+    setErrors({ ...errors, photoURL: 'Image failed to load' });
     setDisplayPhotoURL(defaultPhotoURL);
   };
 
-  // Handle image load start
-  const handleImageLoadStart = () => {
-    setIsImageLoading(true);
-    setErrors({ ...errors, photoURL: '' });
-  };
-
-  // Handle image load success
-  const handleImageLoad = () => {
-    setIsImageLoading(false);
-  };
-
-  // Handle photo URL change
   const handlePhotoURLChange = (text) => {
     setPhotoURL(text);
-    if (text.trim() === '') {
-      // If the input is cleared, revert to the default image for display
-      setDisplayPhotoURL(defaultPhotoURL);
-      setErrors({ ...errors, photoURL: '' });
-    } else {
-      setDisplayPhotoURL(text);
-      setErrors({ ...errors, photoURL: '' });
-    }
+    setDisplayPhotoURL(text.trim() === '' ? defaultPhotoURL : text);
+    setErrors({ ...errors, photoURL: '' });
   };
 
   return (
     <View style={styles.container}>
-      {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={handleBack}>
         <Icon name="arrow-back" size={24} color="#00796b" />
       </TouchableOpacity>
-
       <View style={styles.content}>
-        {/* Profile Image Preview */}
         <View style={styles.profileImageContainer}>
-          {isImageLoading && (
-            <ActivityIndicator size="small" color="#00796b" style={styles.loader} />
-          )}
-          <Image
-            source={{ uri: displayPhotoURL }}
-            style={styles.profileImage}
-            onLoadStart={handleImageLoadStart}
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-          />
+          {isImageLoading && <ActivityIndicator size="small" color="#00796b" style={styles.loader} />}
+          <Image source={{ uri: displayPhotoURL }} style={styles.profileImage} onLoadStart={() => setIsImageLoading(true)} onLoad={() => setIsImageLoading(false)} onError={handleImageError} />
         </View>
-
-        {/* Title */}
         <Text style={styles.title}>{displayName}</Text>
 
-        {/* Form Fields */}
         <View style={styles.form}>
-          {/* Profile Picture URL Input */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Profile Picture URL:</Text>
-            <View style={styles.inputWrapper}>
-              <TextInput
-                style={styles.input}
-                value={photoURL}
-                onChangeText={handlePhotoURLChange}
-                placeholder="Enter image URL (e.g., http://example.com/image.jpg)"
-                placeholderTextColor="#999"
-                autoCapitalize="none"
-              />
-              <Icon name="image" size={20} color="#00796b" style={styles.inputIcon} />
-            </View>
-            {errors.photoURL ? (
-              <View style={styles.errorContainer}>
-                <Icon name="error-outline" size={14} color="#d32f2f" style={styles.errorIcon} />
-                <Text style={styles.errorText}>{errors.photoURL}</Text>
-              </View>
-            ) : null}
+            <TextInput style={styles.input} value={photoURL} onChangeText={handlePhotoURLChange} placeholder="http://example.com/image.jpg" />
+            {errors.photoURL ? <Text style={styles.errorText}>{errors.photoURL}</Text> : null}
           </View>
-
           <View style={styles.inputContainer}>
             <Text style={styles.label}>User Name:</Text>
-            <View style={styles.inputWrapper}>
-              <TextInput
-                style={styles.input}
-                value={displayName}
-                onChangeText={(text) => {
-                  setDisplayName(text);
-                  setErrors({ ...errors, displayName: '' });
-                }}
-                placeholder="Enter your name"
-                placeholderTextColor="#999"
-              />
-              <Icon name="edit" size={20} color="#00796b" style={styles.inputIcon} />
-            </View>
-            {errors.displayName ? (
-              <View style={styles.errorContainer}>
-                <Icon name="error-outline" size={14} color="#d32f2f" style={styles.errorIcon} />
-                <Text style={styles.errorText}>{errors.displayName}</Text>
-              </View>
-            ) : null}
+            <TextInput style={styles.input} value={displayName} onChangeText={setDisplayName} placeholder="Enter your name" />
+            {errors.displayName ? <Text style={styles.errorText}>{errors.displayName}</Text> : null}
           </View>
-
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Password:</Text>
-            <View style={styles.inputWrapper}>
+            <Text style={styles.label}>Current Password:</Text>
+            <View style={styles.passwordWrapper}>
               <TextInput
-                style={styles.input}
+                style={styles.passwordInput}
                 value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                  setErrors({ ...errors, password: '' });
-                }}
-                placeholder="Enter your password"
-                placeholderTextColor="#999"
-                secureTextEntry
+                onChangeText={setPassword}
+                placeholder="Enter current password"
+                secureTextEntry={!currentPasswordVisible}
               />
-              <Icon name="lock" size={20} color="#00796b" style={styles.inputIcon} />
+              <TouchableOpacity onPress={() => setCurrentPasswordVisible(!currentPasswordVisible)}>
+                <MaterialCommunityIcons name={currentPasswordVisible ? 'eye-off' : 'eye'} size={22} color="#333" />
+              </TouchableOpacity>
             </View>
-            {errors.password ? (
-              <View style={styles.errorContainer}>
-                <Icon name="error-outline" size={14} color="#d32f2f" style={styles.errorIcon} />
-                <Text style={styles.errorText}>{errors.password}</Text>
-              </View>
-            ) : null}
+            {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
           </View>
-
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>New Password:</Text>
+            <View style={styles.passwordWrapper}>
+              <TextInput
+                style={styles.passwordInput}
+                value={newPassword}
+                onChangeText={setNewPassword}
+                placeholder="Enter new password"
+                secureTextEntry={!newPasswordVisible}
+              />
+              <TouchableOpacity onPress={() => setNewPasswordVisible(!newPasswordVisible)}>
+                <MaterialCommunityIcons name={newPasswordVisible ? 'eye-off' : 'eye'} size={22} color="#333" />
+              </TouchableOpacity>
+            </View>
+            {errors.newPassword ? <Text style={styles.errorText}>{errors.newPassword}</Text> : null}
+          </View>
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Age:</Text>
-            <View style={styles.inputWrapper}>
-              <TextInput
-                style={styles.input}
-                value={age}
-                onChangeText={(text) => {
-                  setAge(text);
-                  setErrors({ ...errors, age: '' });
-                }}
-                placeholder="Enter your age"
-                placeholderTextColor="#999"
-                keyboardType="numeric"
-              />
-              <Icon name="person" size={20} color="#00796b" style={styles.inputIcon} />
+            <TextInput style={styles.input} value={age} onChangeText={setAge} placeholder="Enter your age" keyboardType="numeric" />
+            {errors.age ? <Text style={styles.errorText}>{errors.age}</Text> : null}
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Gender (Male/Female/Other):</Text>
+            <View style={styles.pickerWrapper}>
+              <Picker selectedValue={gender} onValueChange={(itemValue) => setGender(itemValue)} style={styles.picker}>
+                <Picker.Item label="Select Gender" value="" />
+                <Picker.Item label="Male" value="Male" />
+                <Picker.Item label="Female" value="Female" />
+                <Picker.Item label="Other" value="Other" />
+              </Picker>
             </View>
-            {errors.age ? (
-              <View style={styles.errorContainer}>
-                <Icon name="error-outline" size={14} color="#d32f2f" style={styles.errorIcon} />
-                <Text style={styles.errorText}>{errors.age}</Text>
-              </View>
-            ) : null}
+            {errors.gender ? <Text style={styles.errorText}>{errors.gender}</Text> : null}
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Country:</Text>
+            <TextInput style={styles.input} value={country} onChangeText={setCountry} placeholder="Enter your country" />
+            {errors.country ? <Text style={styles.errorText}>{errors.country}</Text> : null}
           </View>
         </View>
 
-        {/* Status Message */}
         {status ? <Text style={styles.status}>{status}</Text> : null}
 
-        {/* Buttons */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.cancelButton} onPress={handleCancel} activeOpacity={0.8}>
-            <Text style={styles.buttonText}>Cancel</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave} activeOpacity={0.8}>
-            <Text style={styles.buttonText}>Save</Text>
-          </TouchableOpacity>
+          <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}><Text style={styles.buttonText}>Cancel</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave}><Text style={styles.buttonText}>Save</Text></TouchableOpacity>
         </View>
       </View>
     </View>
@@ -425,5 +365,47 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
     fontWeight: '600',
+  },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: '#3f86f7',
+    borderRadius: 10,
+    overflow: 'hidden',
+    backgroundColor: '#e9f3ff',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    color: '#333',
+  },
+  passwordWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#b0bec5',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    paddingHorizontal: 10,
+    height: 40,
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+  },
+  passwordWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#b0bec5',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    paddingHorizontal: 10,
+    height: 40,
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
   },
 });

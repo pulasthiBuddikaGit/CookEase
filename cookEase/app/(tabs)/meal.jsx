@@ -23,6 +23,7 @@ import {
   query,
 } from "firebase/firestore";
 import { MaterialIcons } from "@expo/vector-icons";
+import ProtectedScreen from "../../components/s-components/ProtectedScreen";
 
 export default function RecipeList() {
   const router = useRouter();
@@ -107,6 +108,7 @@ export default function RecipeList() {
   );
 
   return (
+    <ProtectedScreen allow={["user"]} redirectTo="/admin">
     <View style={styles.container}>
       
 
@@ -199,6 +201,7 @@ export default function RecipeList() {
         />
       )}
     </View>
+    </ProtectedScreen>
   );
 }
 
@@ -301,4 +304,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   saveButtonText: { color: "white", fontWeight: "bold" },
+  iconContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
 });
+
