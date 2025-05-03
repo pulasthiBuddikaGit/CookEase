@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { LinearGradient } from "expo-linear-gradient"; // Using expo-linear-gradient for gradient background
 import CalorieReport from "../../components/n-components/CalorieReport"; // Import the CalorieReport component
 import WeightReport from "../../components/n-components/WeightReport"; // Import the WeightReport component
+import PieChartScreen from '../../components/PieChart';
 
 
 export default function Index() {
@@ -140,6 +141,12 @@ export default function Index() {
                 <Text style={styles.moreButtonText}>{expandedCalories ? "Collapse" : "More Details"}</Text>
               </TouchableOpacity>
             </View>
+
+            <View>
+              <PieChartScreen />
+              
+              </View>
+            
           </View>
 
         </View>

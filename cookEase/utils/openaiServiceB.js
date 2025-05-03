@@ -1,12 +1,13 @@
 import OpenAI from "openai";
+import {OPENAI_MEAL_KEY} from "./APIkeys";
 
 // Initialize OpenAI API
 const openai = new OpenAI({
-    apiKey: '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',
-    dangerouslyAllowBrowser: true
+  apiKey: OPENAI_MEAL_KEY,
+  dangerouslyAllowBrowser: true,
 });
 
-export const generateRecipe = async (ingredientsInput, cookingTime, complexity) => {
+export const generateRecipe = async (ingredientsInput, cookingTime, complexity,userId,country,serve) => {
   try {
     const ingredientsList = ingredientsInput
       .split(",")
@@ -17,26 +18,43 @@ export const generateRecipe = async (ingredientsInput, cookingTime, complexity) 
       throw new Error("Please provide at least one ingredient.");
     }
 
-    const prompt = `Generate a simple Sri Lankan recipe using the following ingredients: 
+    const prompt = `Generate a simple recipe using ONLY the following ingredients: 
     ${ingredientsList.join(", ")}.
 
-    - Cooking Time: ${cookingTime}
-    - Complexity: ${complexity}
+   - Cooking Time: ${cookingTime}  
+- Complexity: ${complexity}  
+- Number of Servings: ${serve}  
+- Country: ${country}  
 
-    Provide:
-    - Recipe title
-    - A short description
-    - Ingredients list with exact amounts
-    - Step-by-step cooking instructions
-    - Estimated cooking time
-    - Number of servings.
+Please format the output clearly using the following structure:
 
-    Do NOT include nutrition information, tips, or substitutions. Keep the response clear and structured.`;
+Title  
+[Only the recipe title. No label like 'Title:' or 'Recipe Name:']
+
+Number of Servings  
+[Show the number of servings on a new line]
+
+Short Description  
+[Provide a very short description of the dish, get the user input Number of Servings ]
+
+Ingredients  
+[List of ingredients with exact amounts]
+
+Cooking Instructions  
+[Step-by-step instructions. Each step on a new line.]
+
+Formatting Rules:  
+- Use clear section headers (e.g., "Number of Servings", "Ingredients", "Cooking Instructions") — make them bold and use '-' before the header.
+- Do NOT write the header and content on the same line.
+- Write content of Cooking Instructions with number points and left align.
+- Do NOT use symbols like '**', ':', '-', or markdown.
+- Do NOT include nutritional info, tips, or substitutions.
+- Keep everything clean, structured, and suitable for direct HTML rendering or app display.`;
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        { role: "system", content: "You are a professional chef." },
+        { role: "system", content: "You are an experienced home cook who creates easy and delicious recipes for families using simple techniques." },
         { role: "user", content: prompt },
       ],
       temperature: 0.7,

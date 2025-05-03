@@ -1,12 +1,12 @@
 // utils/openaiService.js
 import OpenAI from "openai";
+import { OPENAI_DIET_KEY } from "./APIkeys"; // Adjust path if needed
 
 // Initialize OpenAI API
 const openai = new OpenAI({
-    apiKey: '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',
-    dangerouslyAllowBrowser: true
+  apiKey: OPENAI_DIET_KEY,
+  dangerouslyAllowBrowser: true
 });
-
 // Function to generate diet plan
 export const generateDietPlan = async (userData) => {
   try {
