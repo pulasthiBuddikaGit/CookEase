@@ -135,18 +135,7 @@ export default function RecipeInput() {
       setLoading(false);
     }
   };
-  
 
-  // Validate ingredients input
-  const validateIngredients = (text) => {
-    const validPattern = /^[A-Za-z, ]*$/;
-    if (validPattern.test(text)) {
-      setIngredients(text);
-      setError("");
-    } else {
-      setError("Only letters and commas are allowed.");
-    }
-  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
