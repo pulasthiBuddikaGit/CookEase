@@ -7,11 +7,11 @@ import { View, ActivityIndicator } from 'react-native';
 export default function ProtectedScreen({ allow = [], redirectTo = '/auth', children }) {
   const { role, loading } = useUser();
   const router = useRouter();
-  const hasRedirected = useRef(false); // 💡 prevents infinite loop
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
     if (!loading && role && !allow.includes(role) && !hasRedirected.current) {
-      hasRedirected.current = true; // ✅ block further redirects
+      hasRedirected.current = true; 
       router.replace(redirectTo);
     }
   }, [loading, role, allow, redirectTo]);

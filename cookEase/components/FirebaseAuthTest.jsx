@@ -1,6 +1,12 @@
 // components/FirebaseAuthTest.jsx
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -33,7 +39,7 @@ export default function FirebaseAuthTest() {
           const userRole = doc?.role || "user";
           setRole(userRole);
 
-          // ✅ Redirect based on role
+          // Redirect based on role
           if (userRole === "admin") {
             router.replace("/(admin-tabs)/admin");
           } else {
@@ -55,7 +61,11 @@ export default function FirebaseAuthTest() {
   const handleSignUp = async () => {
     try {
       setStatus("Creating account...");
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
 
       await createUserDocument(user.uid, {
@@ -74,7 +84,11 @@ export default function FirebaseAuthTest() {
   const handleSignIn = async () => {
     try {
       setStatus("Signing in...");
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       setUser(userCredential.user);
       setStatus("Signed in successfully");
 
@@ -106,7 +120,10 @@ export default function FirebaseAuthTest() {
           <Text style={styles.userText}>User ID: {user.uid}</Text>
           <Text style={styles.userText}>Email: {user.email}</Text>
           <Text style={styles.userText}>Role: {role}</Text>
-          <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+          <TouchableOpacity
+            style={styles.signOutButton}
+            onPress={handleSignOut}
+          >
             <Text style={styles.buttonText}>SIGN OUT</Text>
           </TouchableOpacity>
         </View>

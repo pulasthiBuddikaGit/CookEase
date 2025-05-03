@@ -4,7 +4,7 @@ import recipeReducer from "./b-slices/recipeSlice"
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer, // Add your reducers here
+    counter: counterReducer,
 
     recipes: recipeReducer,
 

@@ -36,7 +36,7 @@ const User = () => {
       const user = auth.currentUser;
       if (!user) return;
 
-      await user.reload(); // ensure latest
+      await user.reload();
       const firestoreData = await getUserDocument(user.uid);
 
       setDisplayName(firestoreData?.displayName || user.displayName || "N/A");
@@ -78,7 +78,6 @@ const User = () => {
       const user = auth.currentUser;
       if (!user) throw new Error("No active user");
 
-      // Optional: Re-authenticate if needed (required if token is old)
       const credential = EmailAuthProvider.credential(
         user.email,
         "user-password"
@@ -179,11 +178,31 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: "#00796b",
   },
-  profileImage: { width: 120, height: 120, borderRadius: 60, marginBottom: 15 },
-  userName: { fontSize: 20, fontWeight: "bold", marginBottom: 5 },
-  userEmail: { fontSize: 16, color: "#666" },
-  userAge: { fontSize: 16, color: "#666", marginTop: 5 },
-  buttonContainer: { width: "100%", marginTop: 30, alignItems: "center" },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 15,
+  },
+  userName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  userEmail: {
+    fontSize: 16,
+    color: "#666",
+  },
+  userAge: {
+    fontSize: 16,
+    color: "#666",
+    marginTop: 5,
+  },
+  buttonContainer: {
+    width: "100%",
+    marginTop: 30,
+    alignItems: "center",
+  },
   button: {
     flexDirection: "row",
     backgroundColor: "#A3D9C9",

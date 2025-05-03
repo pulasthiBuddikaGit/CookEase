@@ -28,8 +28,8 @@ export const UserProvider = ({ children }) => {
       setLoading(false);
     });
 
-    return () => unsubscribe(); // clean up listener on unmount
-  }, []); // ✅ only run once on mount
+    return () => unsubscribe();
+  }, []);
 
   return (
     <UserContext.Provider value={{ firebaseUser, role, loading }}>
