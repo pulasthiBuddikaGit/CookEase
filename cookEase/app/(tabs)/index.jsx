@@ -142,14 +142,7 @@ export default function Index() {
               </TouchableOpacity>
             </View>
            
-            <TouchableOpacity style={styles.box2} activeOpacity={0.8}>
-              <Text style={styles.boxTitle2}>Total Calories Insight</Text>
-              <Text style={styles.boxSubtitle2}>Monitor monthley calorie count</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.box2} activeOpacity={0.8}>
-              <Text style={styles.boxTitle2}>Body Weight Insights</Text>
-              <Text style={styles.boxSubtitle2}>monitor your weight</Text>
-            </TouchableOpacity>
+            
             <View>
               <PieChartScreen />
               
