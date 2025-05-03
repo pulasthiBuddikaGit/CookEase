@@ -1,195 +1,204 @@
 // app/(tabs)/user.jsx
-import React, { useState, useEffect } from 'react';
-import { Text, View, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
-import { signOut, deleteUser } from 'firebase/auth';
-import { auth } from '../../firebaseConfig';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
+import React, { useState, useEffect } from "react";
+import {
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from "react-native";
+import { useRouter, useFocusEffect } from "expo-router";
+import { signOut, deleteUser } from "firebase/auth";
+import { auth } from "../../firebaseConfig";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
+import ProtectedScreen from "../../components/s-components/ProtectedScreen";
+import {
+  getUserDocument,
+  deleteUserDocument,
+} from "../../services/senudi/userService";
+
+const defaultPhotoURL =
+  "https://www.pngitem.com/pimgs/m/146-1468479_default-profile-picture-png-transparent-png.png";
 
 const User = () => {
-  const [status, setStatus] = useState('');
-  const [photoURL, setPhotoURL] = useState(null); // Initialize as null
-  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false); // State for modal visibility
-  const defaultPhotoURL = 'https://www.pngitem.com/pimgs/m/146-1468479_default-profile-picture-png-transparent-png.png'; // Default silhouette
+  const [status, setStatus] = useState("");
+  const [photoURL, setPhotoURL] = useState(defaultPhotoURL);
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [age, setAge] = useState("");
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const router = useRouter();
 
-  // Function to refresh user data
-  const refreshUserData = async () => {
+  const loadUserProfile = async () => {
     try {
-      // Refresh the current user data
-      await auth.currentUser.reload();
-      const updatedUser = auth.currentUser;
-      if (updatedUser) {
-        setPhotoURL(updatedUser.photoURL || defaultPhotoURL);
-      }
+      const user = auth.currentUser;
+      if (!user) return;
+
+      await user.reload(); // ensure latest
+      const firestoreData = await getUserDocument(user.uid);
+
+      setDisplayName(firestoreData?.displayName || user.displayName || "N/A");
+      setEmail(user.email);
+      setAge(firestoreData?.age || "N/A");
+      setPhotoURL(firestoreData?.photoURL || user.photoURL || defaultPhotoURL);
     } catch (error) {
-      console.error('Error refreshing user data:', error);
-      setPhotoURL(defaultPhotoURL); // Fallback to default on error
+      console.error("Error loading profile:", error);
     }
   };
 
-  // Fetch user data when the page mounts
   useEffect(() => {
-    if (auth.currentUser) {
-      setPhotoURL(auth.currentUser.photoURL || defaultPhotoURL);
-    }
+    loadUserProfile();
   }, []);
 
-  // Refresh user data when the page regains focus
   useFocusEffect(
     React.useCallback(() => {
-      refreshUserData();
+      loadUserProfile();
     }, [])
   );
 
   const handleSignOut = async () => {
     try {
-      setStatus('Signing out...');
+      setStatus("Signing out...");
       await signOut(auth);
-      setStatus('Signed out successfully');
-      router.replace('/auth');
+      setStatus("Signed out successfully");
+      router.replace("/auth");
     } catch (error) {
       setStatus(`Error: ${error.message}`);
     }
   };
 
-  const handleEditAccount = () => {
-    router.push('/account/edit');
-  };
-
-  const handleDeleteAccount = () => {
-    // Show the delete confirmation modal
-    setIsDeleteModalVisible(true);
-  };
-
-  const handleDeleteCancel = () => {
-    // Close the modal
-    setIsDeleteModalVisible(false);
-    console.log('Delete canceled');
-  };
+  const handleEditAccount = () => router.push("/account/edit");
+  const handleDeleteCancel = () => setIsDeleteModalVisible(false);
+  const handleDeleteAccount = () => setIsDeleteModalVisible(true);
 
   const handleDeleteConfirm = async () => {
-    // Close the modal
-    setIsDeleteModalVisible(false);
-
     try {
-      setStatus('Deleting account...');
-      // Delete the user's account
       const user = auth.currentUser;
+      if (!user) throw new Error("No active user");
+
+      // Optional: Re-authenticate if needed (required if token is old)
+      const credential = EmailAuthProvider.credential(
+        user.email,
+        "user-password"
+      );
+      await reauthenticateWithCredential(user, credential);
+
+      // Delete from Firestore
+      await deleteUserDocument(user.uid);
+
+      // Delete from Firebase Auth
       await deleteUser(user);
-      setStatus('Account deleted successfully');
-      // Navigate to the auth screen after deletion
-      router.replace('/auth');
+
+      // Redirect after successful deletion
+      router.replace("/auth");
     } catch (error) {
-      setStatus(`Error deleting account: ${error.message}`);
-      Alert.alert('Error', error.message);
+      if (error.code === "auth/requires-recent-login") {
+        Alert.alert(
+          "Session Expired",
+          "Please sign in again to delete your account."
+        );
+      } else {
+        Alert.alert("Error", error.message);
+      }
     }
   };
 
   return (
-    <View style={styles.container}>
-      {/* Profile Section */}
-      <View style={styles.profileContainer}>
+    <ProtectedScreen allow={["user"]} redirectTo="/admin">
+      <View style={styles.container}>
+        <Text style={styles.title}>My Profile</Text>
         <Image
           source={{ uri: photoURL }}
           style={styles.profileImage}
-          onError={() => setPhotoURL(defaultPhotoURL)} // Fallback to default on error
+          onError={() => setPhotoURL(defaultPhotoURL)}
         />
-        <Text style={styles.userName}>Jane Doe</Text>
-        <Text style={styles.userEmail}>janedoe@gmail.com</Text>
+        <Text style={styles.userName}>{displayName}</Text>
+        <Text style={styles.userEmail}>{email}</Text>
+        <Text style={styles.userAge}>Age: {age}</Text>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleEditAccount}>
+            <Icon
+              name="edit"
+              size={20}
+              color="#000"
+              style={styles.buttonIcon}
+            />
+            <Text style={styles.buttonText}>Edit Account</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, styles.deleteButton]}
+            onPress={handleDeleteAccount}
+          >
+            <Icon
+              name="delete"
+              size={20}
+              color="#ff0000"
+              style={styles.buttonIcon}
+            />
+            <Text style={[styles.buttonText, styles.deleteButtonText]}>
+              Delete Account
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleSignOut}>
+            <Icon
+              name="logout"
+              size={20}
+              color="#000"
+              style={styles.buttonIcon}
+            />
+            <Text style={styles.buttonText}>Sign Out</Text>
+          </TouchableOpacity>
+        </View>
+
+        <DeleteConfirmationModal
+          visible={isDeleteModalVisible}
+          onCancel={handleDeleteCancel}
+          onSuccess={() => router.replace("/auth")}
+          userId={auth.currentUser?.uid}
+          authUser={auth.currentUser}
+        />
       </View>
-
-      {/* Status Message */}
-      <Text style={styles.status}>{status}</Text>
-
-      {/* Buttons */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleEditAccount}>
-          <Icon name="edit" size={20} color="#000" style={styles.buttonIcon} />
-          <Text style={styles.buttonText}>Edit Account</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDeleteAccount}>
-          <Icon name="delete" size={20} color="#ff0000" style={styles.buttonIcon} />
-          <Text style={[styles.buttonText, styles.deleteButtonText]}>Delete Account</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleSignOut}>
-          <Icon name="logout" size={20} color="#000" style={styles.buttonIcon} />
-          <Text style={styles.buttonText}>Sign Out</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Delete Confirmation Modal */}
-      <DeleteConfirmationModal
-        visible={isDeleteModalVisible}
-        onCancel={handleDeleteCancel}
-        onConfirm={handleDeleteConfirm}
-      />
-    </View>
+    </ProtectedScreen>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
+    padding: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
   },
-  profileContainer: {
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: 15,
-  },
-  userName: {
+  title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  userEmail: {
-    fontSize: 16,
-    color: '#666',
-  },
-  status: {
-    fontSize: 16,
+    fontWeight: "bold",
     marginBottom: 20,
-    textAlign: 'center',
-    color: '#666',
+    color: "#00796b",
   },
-  buttonContainer: {
-    width: '100%',
-    alignItems: 'center',
-  },
+  profileImage: { width: 120, height: 120, borderRadius: 60, marginBottom: 15 },
+  userName: { fontSize: 20, fontWeight: "bold", marginBottom: 5 },
+  userEmail: { fontSize: 16, color: "#666" },
+  userAge: { fontSize: 16, color: "#666", marginTop: 5 },
+  buttonContainer: { width: "100%", marginTop: 30, alignItems: "center" },
   button: {
-    flexDirection: 'row',
-    backgroundColor: '#e0f7fa',
+    flexDirection: "row",
+    backgroundColor: "#A3D9C9",
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,
-    alignItems: 'center',
+    alignItems: "center",
     marginVertical: 10,
-    width: '80%',
-    justifyContent: 'center',
+    width: "80%",
+    justifyContent: "center",
   },
-  deleteButton: {
-    backgroundColor: '#ffebee',
-  },
-  buttonIcon: {
-    marginRight: 10,
-  },
-  buttonText: {
-    fontSize: 16,
-    color: '#000',
-  },
-  deleteButtonText: {
-    color: '#ff0000',
-  },
+  deleteButton: { backgroundColor: "#ffebee" },
+  buttonIcon: { marginRight: 10 },
+  buttonText: { fontSize: 16, color: "#000" },
+  deleteButtonText: { color: "#ff0000" },
 });
 
 export default User;
