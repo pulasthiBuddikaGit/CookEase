@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,13 +12,19 @@ import {
 import { Picker } from "@react-native-picker/picker"; // Import Picker
 import { useRouter } from "expo-router";
 import { generateRecipe } from "../../utils/openaiServiceB"; // Import OpenAI function
-import ImageProcessing from "../../utils/ImageProcessing "; // Fixed the extra space in import
+import ImageProcessing from "../../utils/ImageProcessing ";
+import { useSelector, useDispatch } from 'react-redux';
+import { addIngredients, clearIngredients } from "../../redux/p-slices/imageProcessingSlice";
 import { db } from "../../firebaseConfig";
 import { getAuth } from "firebase/auth";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export default function RecipeInput() {
-  const [ingredients, setIngredients] = useState("");
+  const dispatch = useDispatch();
+  const selectedIngredients = useSelector((state) => state.imageProcessing.selectedIngredients); // Get selected ingredients from Redux store
+
+  const [ingredients, setIngredients] = useState('');
+
   const [recipe, setRecipe] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -30,6 +36,49 @@ export default function RecipeInput() {
 
 
   const router = useRouter();
+
+//pulasthi
+  // Update ingredients state when selectedIngredients in Redux changes
+  useEffect(() => {
+    if (selectedIngredients.length > 0) {
+      setIngredients(selectedIngredients.join());
+    }
+  }, [selectedIngredients]);
+//pulasthi
+
+//pulasthi
+    // Separate validation and text change handlers
+  const handleTextChange = (text) => {
+      // Set the ingredients state directly without validation
+      setIngredients(text);
+      
+    // Update Redux store with the manually entered ingredients
+    // Only update Redux when we have valid text input
+    if (validateInput(text)) { 
+      //Below code do like this: For example, if text is "Apple, Banana, Carrot", this creates ["Apple", "Banana", "Carrot"].
+      //why this is needed? Thee text input is a comma-separated string, but Redux needs an array.  
+                                      //without here this space after comma inputing commas manually isn't possible
+      const ingredientArray = text.split(", ").map(item => item.trim()).filter(item => item !== "");
+      //It prevents duplication: By clearing the ingredients first and then adding the new array
+      dispatch(clearIngredients());
+      // This is the critical line that ensures your manually entered ingredients are saved in Redux and will persist when navigating between screens.
+      dispatch(addIngredients(ingredientArray));
+      setError("");
+    }
+  };
+//pulasthi
+
+//pulasthi
+  // Function to validate input text - only gives error, doesn't block input
+  const validateInput = (text) => {
+    const validPattern = /^[A-Za-z ,]*$/;
+    if (!validPattern.test(text)) {
+      setError("Only letters, commas, and spaces are allowed.");
+      return false;
+    }
+    return true;
+  };
+//pulasthi
 
   // Handle recipe generation and saving to Firebase
   const handleGenerateRecipe = async () => {
@@ -86,18 +135,7 @@ export default function RecipeInput() {
       setLoading(false);
     }
   };
-  
 
-  // Validate ingredients input
-  const validateIngredients = (text) => {
-    const validPattern = /^[A-Za-z, ]*$/;
-    if (validPattern.test(text)) {
-      setIngredients(text);
-      setError("");
-    } else {
-      setError("Only letters and commas are allowed.");
-    }
-  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -106,22 +144,25 @@ export default function RecipeInput() {
         <Text style={styles.header}>Generate Recipe</Text>
 
         <Text style={styles.title}>Enter Ingredients</Text>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <View style={{ flex: 1 }}>
-            <TextInput
-              style={[styles.input, error ? styles.inputError : null]}
-              placeholder="Please enter at least two ingredients. E.g. Chicken, Rice, Onion..."
-              value={ingredients}
-              onChangeText={validateIngredients}
-            />
-            {error ? <Text style={styles.errorText}>{error}</Text> : null}
-          </View>
 
-          {/* ImageProcessing Component */}
-          <View style={{ marginLeft: 10 }}>
-            <ImageProcessing />
-          </View>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flex: 1 }}>
+          <TextInput
+            style={[styles.input, error ? styles.inputError : null]}
+            placeholder="Please enter at least two ingredients. E.g. Chicken, Rice, Onion..."
+            value={ingredients} //here
+            onChangeText={handleTextChange} //changed
+            multiline={true}
+          />
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>
+
+        {/*Pulasthi */}
+        <View style={{ marginLeft: 10 }}>
+          <ImageProcessing />
+        </View>
+        {/*Pulasthi */}  
+      </View>
 
         <Text style={styles.title}>Cooking Time</Text>
         <Picker

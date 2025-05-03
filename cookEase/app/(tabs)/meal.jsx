@@ -15,6 +15,7 @@ import { useRouter } from "expo-router";
 import { db, auth } from "../../firebaseConfig";
 import { collection, getDocs, updateDoc, doc, deleteDoc, orderBy, query } from "firebase/firestore"; // Import orderBy and query
 import { MaterialIcons } from "@expo/vector-icons";
+import ProtectedScreen from "../../components/s-components/ProtectedScreen";
 
 export default function RecipeList() {
   const router = useRouter();
@@ -145,6 +146,7 @@ export default function RecipeList() {
   }
 
   return (
+    <ProtectedScreen allow={["user"]} redirectTo="/admin">
     <View style={styles.container}>
       {/* Image Display */}
       <View style={styles.imageContainer}>
@@ -262,6 +264,7 @@ export default function RecipeList() {
       />
 )}
     </View>
+    </ProtectedScreen>
   );
 }
 
@@ -373,3 +376,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+

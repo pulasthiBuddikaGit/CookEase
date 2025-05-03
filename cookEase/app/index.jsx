@@ -1,3 +1,4 @@
+//redirect will navigate to the new route without rendering the current page.
 import { Redirect } from 'expo-router';
 
 //In Expo Router, if a folder contains an index.js file, it becomes the default screen for that route.
