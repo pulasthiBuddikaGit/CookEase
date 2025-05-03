@@ -1,11 +1,7 @@
-
 import { Stack } from "expo-router";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
-import RecipeInput from "./screens/RecipeInput";
-import RecipeDetails from "./screens/RecipeDetails";
-import analyzeImage from "./screens/analyzeImage";
-
+import { UserProvider } from "../context/UserContext";
 
 // This is the root layout of the app. It is the first component that is rendered when the app starts.
 // It is responsible for setting up the Redux store and the navigation stack.
@@ -16,28 +12,50 @@ import analyzeImage from "./screens/analyzeImage";
 // The options prop is used to configure the screen.
 
 export default function RootLayout() {
-
-  return(
+  return (
     <Provider store={store}>
-      <Stack screenOptions={{
-        headerStyle: { backgroundColor: '#00796b' },
-        headerTintColor: '#fff', 
-        headerTitleStyle: { fontSize: 20, fontWeight: 'bold' },
-        headerTitleAlign: 'center',
-      }}>
-    
-      <Stack.Screen name="auth/index" options={{ headerShown: true , title:"Login page"}} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="screens/n-screens/CreateDiet" options={{ title: "Diet Plan Creation" }} />
-      <Stack.Screen name="screens/n-screens/GeneratedDiet" options={{ title: "Your Personalized Diet Plan" }} />
-      <Stack.Screen name="screens/n-screens/CurrentDiet" options={{ title: "Your Current Diet Plan" }} />
-      <Stack.Screen name="screens/n-screens/DietHistory" options={{ title: "My History" }} />
-      <Stack.Screen name="screens/n-screens/PreviousDiet" options={{ title: "Previous Diet Plan" }} />
-      <Stack.Screen name="account/edit" options={{ headerShown: true, title:"Edit Account" }} />
-      <Stack.Screen name="RecipeInput" options={{RecipeInput}} />
-      <Stack.Screen name="RecipeDetails" options={{ RecipeDetails}} />
-      <Stack.Screen name="screens/analyzeImage/index" options={{ headerShown: true, title:"Analyze Image" }} />
-    </Stack> 
+      <UserProvider>
+        <Stack
+          screenOptions={{
+            headerStyle: { backgroundColor: "#00796b" },
+            headerTintColor: "#fff",
+            headerTitleStyle: { fontSize: 20, fontWeight: "bold" },
+            headerTitleAlign: "center",
+          }}
+        >
+          <Stack.Screen
+            name="auth/index"
+            options={{ headerShown: true, title: "Login Page" }}
+          />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="screens/n-screens/CreateDiet"
+            options={{ title: "Diet Plan Creation" }}
+          />
+          <Stack.Screen
+            name="screens/n-screens/GeneratedDiet"
+            options={{ title: "Your Personalized Diet Plan" }}
+          />
+          <Stack.Screen
+            name="screens/n-screens/CurrentDiet"
+            options={{ title: "Your Current Diet Plan" }}
+          />
+          <Stack.Screen
+            name="screens/n-screens/DietHistory"
+            options={{ title: "My History" }}
+          />
+          <Stack.Screen
+            name="screens/n-screens/PreviousDiet"
+            options={{ title: "Previous Diet Plan" }}
+          />
+          <Stack.Screen name="account/edit" options={{ headerShown: true }} />
+          <Stack.Screen name="RecipeInput" />
+          <Stack.Screen name="RecipeDetails" />
+          <Stack.Screen name="screens/analyzeImage/index"
+            options={{ headerShown: true, title:"Analyze Image" }} 
+          />
+        </Stack>
+      </UserProvider>
     </Provider>
   );
 }

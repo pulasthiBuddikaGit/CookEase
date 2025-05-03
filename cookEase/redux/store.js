@@ -5,7 +5,7 @@ import imageProcessingReducer from "./p-slices/imageProcessingSlice";
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer, // Add your reducers here
+    counter: counterReducer,
     recipes: recipeReducer,
     imageProcessing: imageProcessingReducer,
     
