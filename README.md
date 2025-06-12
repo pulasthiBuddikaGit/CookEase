@@ -1,13 +1,13 @@
-# 🍳 CookEase – Smart Meal & Diet Recommendation App
+# 🍳 CookEase – Smart Recipe & Diet Recommendation App
 
-CookEase is a smart mobile and web application designed to help users discover daily meal ideas and receive personalized diet recommendations based on their available ingredients and health metrics. The app aims to promote healthier eating habits by providing tailored meal suggestions with convenience and precision.
+CookEase is a smart mobile and web application designed to help users discover daily recipe ideas and receive personalized diet recommendations based on their available ingredients and health metrics. The app aims to promote healthier eating habits by providing tailored meal suggestions with convenience and precision.
 
 ---
 
 ## 🚀 Features
 
-### 1. 🥗 Daily Meal Recommendation
-- Get meal suggestions based on ingredients you have at home.
+### 1. 🥗 Daily Recipe Recommendation
+- Get recipe suggestions based on ingredients you have at home.
 - Add, edit, or delete ingredients.
 - Generate and view reports on suggested meals.
 
