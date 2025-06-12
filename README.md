@@ -22,8 +22,8 @@ CookEase is a smart mobile and web application designed to help users discover d
 - CRUD operations for users.
 - User authentication and profile management.
 
-### 4. 📷 Ingredient Scanning
-- Use Google Vision API to scan and recognize ingredients via camera or image upload.
+### 4. 📷 Visual Ingredient Recognition 
+- Use Google Cloud Vision API to scan and recognize ingredients via camera or image upload.
 - Seamless integration with the meal suggestion engine.
 
 ---
